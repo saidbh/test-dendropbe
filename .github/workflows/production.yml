@@ -38,6 +38,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          file: ./Dockerfile-php
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REPO }}:latest,${{ env.REPO }}:${{ steps.versioning.outputs.version }}
       
