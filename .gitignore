@@ -1,0 +1,25 @@
+###> symfony/framework-bundle ###
+/.env
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> symfony/web-server-bundle ###
+/.web-server-pid
+###< symfony/web-server-bundle ###
+
+# IDEs and editors
+/.idea
+.idea/workspace.xml
+/public/api/images
+/docker/docker-compose.yml
+/docker/docker-compose.test.yml
+docker/docker-compose.prod.yml
+/docker/mariadb
+/docker/.env
+/docker/.env.test
+docker/.env.dev
+.DS_Store
+composer.lock
+symfony.lock
