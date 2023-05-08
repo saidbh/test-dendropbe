@@ -71,7 +71,9 @@ class ChampignonService extends AbstractController
         }
         $champignons = [];
         foreach (array_unique($data) as $champignonId) {
-            $champ = $this->getDoctrine()->getRepository(Champignons::class)->findOneBy(['id' => $champignonId]);
+            $champ = $this->getDoctrine()->getRepository(Champignons::class)->findOneBy(['id' => (int) $champignonId]);
+             
+	    
             if ($champ instanceof Champignons) {
                 $champignons[] = $this->serializerChampignons($champ);
             }

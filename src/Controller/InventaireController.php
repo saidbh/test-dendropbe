@@ -5,14 +5,15 @@ namespace App\Controller;
 use App\Entity\Essence;
 use App\Entity\Inventaire;
 use App\Service\BevaService;
+use Swagger\Annotations as SWG;
 use App\Service\EpaysageService;
 use App\Service\InventaireService;
+use App\Repository\InventaireRepository;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Swagger\Annotations as SWG;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/api/inventaire")
@@ -49,12 +50,22 @@ class InventaireController extends AbstractController
      *     type="number",
      *     description="set of pages"
      * )
+     * @SWG\Parameter(
+     *    name="limit",
+     *   in="query",
+     *  type="number",
+     * description="set of items per page"
+     *)
      * @SWG\Tag(name="Inventaire")
      * @return JsonResponse
      */
-    public function list(Request $request): JsonResponse
+    public function list(InventaireRepository $inventaireRepository, Request $request): JsonResponse
     {
+        if($request->get('page') && $request->get('limit')){
+            $data = $this->service->getAllWithPagination($inventaireRepository,$request);
+        }else{
         $data = $this->service->getAll($request);
+        }
         return new JsonResponse($data['data'], $data['statusCode']);
     }
 
@@ -75,12 +86,23 @@ class InventaireController extends AbstractController
      *     type="number",
      *     description="set of pages"
      * )
+     * @SWG\Parameter(
+     *    name="limit",
+     *   in="query",
+     *  type="number",
+     * description="set of items per page"
+     *)
      * @SWG\Tag(name="Inventaire")
      * @return JsonResponse
      */
-    public function listInventoryFinished(Request $request): JsonResponse
+    public function listInventoryFinished(InventaireRepository $inventaireRepository,Request $request): JsonResponse
     {
+        if($request->get('page') && $request->get('limit'))
+        {
+            $data = $this->service->getAllFinishedWithPagination($inventaireRepository,$request, true);
+        }else{
         $data = $this->service->getAllFinished($request, true);
+        }
         return new JsonResponse($data['data'], $data['statusCode']);
     }
 
@@ -381,6 +403,7 @@ class InventaireController extends AbstractController
     public function inventoryByPosition(Request $request): JsonResponse
     {
         $result = $this->service->getAllByPosition($request);
+
         return $this->json($result['data'], $result['statusCode']);
     }
 }

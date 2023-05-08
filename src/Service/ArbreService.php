@@ -434,7 +434,7 @@ class ArbreService extends AbstractController
         if ($object->getArbre()->getEtatSanTroncNuisibles()) {
             foreach ($object->getArbre()->getEtatSanTroncNuisibles() as $etatSanTroncNuisibleObject) {
 
-                $nuisible = $this->getDoctrine()->getRepository(Nuisible::class)->findOneBy(['id' => $etatSanTroncNuisibleObject]);
+                $nuisible = $this->getDoctrine()->getRepository(Nuisible::class)->findOneBy(['id' => (int) $etatSanTroncNuisibleObject]);
                 if ($nuisible instanceof Nuisible) {
                     $_etatSanTroncNuisibles ['id'] = $nuisible->getId();
                     $_etatSanTroncNuisibles ['name'] = $nuisible->getName();
@@ -457,7 +457,7 @@ class ArbreService extends AbstractController
 
             foreach ($object->getArbre()->getEtatSanHouppierNuisibles() as $etatSanHouppierNuisibleObject) {
 
-                $nuisible = $this->getDoctrine()->getRepository(Nuisible::class)->findOneBy(['id' => $etatSanHouppierNuisibleObject]);
+                $nuisible = $this->getDoctrine()->getRepository(Nuisible::class)->findOneBy(['id' => (int) $etatSanHouppierNuisibleObject]);
 
                 if ($nuisible instanceof Nuisible) {
                     $_etatSanHouppierNuisibles ['id'] = $nuisible->getId();

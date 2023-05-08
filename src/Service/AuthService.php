@@ -93,12 +93,13 @@ class AuthService extends AbstractController
      * @param Request $request
      * @return array
      */
-    public function login(Request $request): array
+    public function login(Request $request)
     {
 
         /** @var Serializer $serializer */
         $serializer = $this->get('serializer');
         $data = $serializer->decode($request->getContent(), 'json');
+        
 
         // CHECK ALL DATA IF IS CORRECT
         if (!isset($data['email']) && !isset($data['password'])) {
@@ -132,6 +133,7 @@ class AuthService extends AbstractController
         }
         // CAS D'UN EMAIL
         /** @var User $user */
+
         $user = $this->_userRepository->findOneBy(["email" => $data['email']]);
 
         if (!$user instanceof User) {
@@ -692,4 +694,3 @@ class AuthService extends AbstractController
         }
     }
 }
-

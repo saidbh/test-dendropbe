@@ -9,6 +9,7 @@ use App\Entity\Inventaire;
 use App\Entity\User;
 use App\Form\InventaireType;
 use App\Repository\InventaireRepository;
+use App\Repository\UserRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +27,7 @@ class InventaireService extends AbstractController
     private $_epaysageService;
     private $_essenceService;
     private $_travauxService;
+    private $_userRepository;
 
     const TYPE_TREE = ['ARBRE', 'ALIGNEMENT'];
 
@@ -37,7 +39,8 @@ class InventaireService extends AbstractController
         ChampignonService  $champignonService,
         EpaysageService    $epaysageService,
         EssenceService     $essenceService,
-        TravauxService     $travauxService
+        TravauxService     $travauxService,
+        UserRepository     $userRepository
     )
     {
         $this->tokenService = $tokenService;
@@ -48,6 +51,7 @@ class InventaireService extends AbstractController
         $this->_epaysageService = $epaysageService;
         $this->_essenceService = $essenceService;
         $this->_travauxService = $travauxService;
+        $this->_userRepository = $userRepository;
     }
 
     /**
@@ -73,6 +77,29 @@ class InventaireService extends AbstractController
     }
 
     /**
+     * @param $request
+     * @return array
+     */
+    public function getAllWithPagination($inventaireRepository,$request): array{
+
+        $page = $request->get('page');
+        $limit = $request->get('limit');
+        $data = $this->tokenService->MiddlewareNormalUser($request->headers->get('Authorization'));
+        if (!isset($data['user']) || !$data['user']) {
+            return $data;
+        }
+        $user = $data['user'];
+        $data = $this->generateArrayInventaire($inventaireRepository->queryInventoryByPaginators($user,$page,$limit));
+        if (isset($page)) {
+            return
+            ["data" => $data, "statusCode" => Response::HTTP_OK];
+        }
+        return ["data" => ["data"=> "0"], "statusCode" => Response::HTTP_BAD_REQUEST];
+        
+    }
+    
+
+    /**
      * @param Request $request
      * @return array
      */
@@ -95,6 +122,44 @@ class InventaireService extends AbstractController
         }
 
         return PaginatedService::paginateList($data, $page, 20);
+    }
+
+
+
+    /**
+     * @param Request $request
+     * @param bool $finished 
+     * @return array
+     */
+    public function getAllFinishedWithPagination($inventaireRepository,$request, bool $finished)
+    {
+        // VERIFICATION TOKEN
+        $data = $this->tokenService->MiddlewareNormalUser($request->headers->get('Authorization'));
+        if (!isset($data['user']) || !$data['user']) {
+            return $data;
+        }
+        $user = $data['user'];
+        // Get Data Params
+        $page = $request->get('page');
+        $limit = $request->get('limit');
+        /** @var Serializer $serializer */
+        $serializer = $this->get('serializer');
+        $data = $serializer->decode($request->getContent(), 'json');
+
+
+        /** @var Inventaire[] $inventory */
+        $inventory = $this->generateArrayInventaire($inventaireRepository->queryInventoryByGroupeIsFinishedPagination($page, $limit,$user, $finished ? 1 : 0));
+
+        if (!isset($data['page'])) {
+            return [
+                "data" => $inventory,
+                "statusCode" => Response::HTTP_OK
+            ];
+        }
+        return PaginatedService::paginateList($inventory, $page, 20);
+        
+
+        
     }
 
     /**
@@ -564,12 +629,18 @@ class InventaireService extends AbstractController
      * @param Request $request
      * @return array
      */
-    public function getStatInventory(Request $request): array
+    public function getStatInventory(Request $request, $user=null): array
     {
 
         $data = $this->tokenService->MiddlewareNormalUser($request->headers->get('Authorization'));
         if (!isset($data['user']) || !$data['user']) {
             return $data;
+        }
+
+        if (isset($user)) {
+            $user = $this->_userRepository->findOneBy(['id'=>$user]);
+            $data['user']=$user;
+
         }
 
         // Get infos inventaires
@@ -599,7 +670,7 @@ class InventaireService extends AbstractController
     private function getListInventorybyUser(User $user): array
     {
 
-        $objects = $this->getDoctrine()->getRepository(Inventaire::class)->findBy([], ['id' => 'DESC']);
+        $objects = $this->getDoctrine()->getRepository(Inventaire::class)->findBy(['user'=>$user], ['id' => 'DESC']);
         $data = [];
         foreach ($objects as $object) {
             if ($object->getUser()->getId() === $user->getId()) {
@@ -810,12 +881,14 @@ class InventaireService extends AbstractController
             if (MapService::isInventoryInZone($inventory, $data)) {
                 if(!$isSearching) {
                     self::filterInventoryMap($inventory, $data) && array_push($result,  $this->generateObjectInventaire($inventory));
+                    
                 } else {
                     array_push($result,  $this->generateObjectInventaire($inventory));
+                    
                 }
+                return $result;
             }
         }
-        return $result;
     }
 
     /**

@@ -76,7 +76,6 @@ class InventaireRepository extends ServiceEntityRepository
      */
     public function queryInventoryByGroupe(User $user): array
     {
-
         if (strtoupper($user->getGroupe()->getGroupeType() !== 'DENDROMAP')) {
             return $this->getEntityManager()
                 ->createQuery(
@@ -86,8 +85,75 @@ class InventaireRepository extends ServiceEntityRepository
                 ->execute();
 
         } else {
+
             return $this->findBy([], ['id' => 'DESC']);
         }
+    }
+
+    /**
+     * 
+     * @return array
+     */
+    public function queryInventoryByPaginators($user,$page,$limit): array
+    {
+        
+        if (strtoupper($user->getGroupe()->getGroupeType() !== 'DENDROMAP')) {
+            return $this->getEntityManager()
+                ->createQuery(
+                    'SELECT i FROM App\Entity\Inventaire i
+                     where i.user in (select u.id FROM App\Entity\User u where u.groupe=:groupeId) ORDER BY i.id DESC'
+                )
+                ->setParameter('groupeId', $user->getGroupe()->getId())
+                ->setFirstResult(($page - 1) * $limit)
+                ->setMaxResults($limit)
+                ->execute();
+        } 
+        else {
+            return $this->getEntityManager()->createQueryBuilder('i')
+                ->select('i')
+                ->from('App\Entity\Inventaire', 'i')
+                ->orderBy('i.id', 'DESC')
+                ->setFirstResult(($page - 1) * $limit)
+                ->setMaxResults($limit)
+                ->getQuery()
+                ->getResult();
+        }
+        
+    }
+     
+    /**
+     * 
+     * @return array
+     *
+     * */
+    public function queryInventoryByGroupeIsFinishedPagination($page, $limit,$user, $isFinished): array
+    {
+        if (strtoupper($user->getGroupe()->getGroupeType() !== 'DENDROMAP')) {
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT i FROM App\Entity\Inventaire i
+                     where i.user in (select u.id FROM App\Entity\User u where u.groupe=:groupeId) AND i.isFinished = :isFinished ORDER BY i.id DESC'
+            )
+            ->setParameter('groupeId', $user->getGroupe()->getId())
+            ->setParameter('isFinished', $isFinished)
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->execute();
+        } else {
+            return $this->getEntityManager()->createQueryBuilder('i')
+                ->select('i')
+                ->from('App\Entity\Inventaire', 'i')
+                ->where("i.isFinished = :isFinished")
+                ->setParameter('isFinished',$isFinished)
+                ->orderBy('i.id', 'DESC')
+                ->setFirstResult(($page - 1) * $limit)
+                ->setMaxResults($limit)
+                ->getQuery()
+                ->getResult();            
+        }
+
+
+            
     }
 
     /**
