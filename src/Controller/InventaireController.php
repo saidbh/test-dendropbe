@@ -406,4 +406,6 @@ class InventaireController extends AbstractController
 
         return $this->json($result['data'], $result['statusCode']);
     }
+    
+    //test 
 }
