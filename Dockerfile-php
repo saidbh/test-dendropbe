@@ -26,4 +26,5 @@ RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/lo
 COPY ./ /var/www/dendromap
 
 WORKDIR /var/www/dendromap/
+RUN composer install
 
