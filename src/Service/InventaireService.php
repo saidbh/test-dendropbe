@@ -90,12 +90,7 @@ class InventaireService extends AbstractController
         }
         $user = $data['user'];
         $data = $this->generateArrayInventaire($inventaireRepository->queryInventoryByPaginators($user,$page,$limit));
-        if (isset($page)) {
-            return
-            ["data" => $data, "statusCode" => Response::HTTP_OK];
-        }
-        return ["data" => ["data"=> "0"], "statusCode" => Response::HTTP_BAD_REQUEST];
-        
+        return['data'=> $data['data'],'count'=>$data['count'], "statusCode" => Response::HTTP_OK];
     }
     
 
@@ -116,7 +111,7 @@ class InventaireService extends AbstractController
 
         if (!isset($page)) {
             return [
-                "data" => $data,
+                "data" => $data['data'],
                 "statusCode" => Response::HTTP_OK
             ];
         }
@@ -145,21 +140,13 @@ class InventaireService extends AbstractController
         /** @var Serializer $serializer */
         $serializer = $this->get('serializer');
         $data = $serializer->decode($request->getContent(), 'json');
-
-
         /** @var Inventaire[] $inventory */
         $inventory = $this->generateArrayInventaire($inventaireRepository->queryInventoryByGroupeIsFinishedPagination($page, $limit,$user, $finished ? 1 : 0));
-
-        if (!isset($data['page'])) {
             return [
-                "data" => $inventory,
+                "data" => $inventory["data"],
+                "count" => $inventory["count"],
                 "statusCode" => Response::HTTP_OK
             ];
-        }
-        return PaginatedService::paginateList($inventory, $page, 20);
-        
-
-        
     }
 
     /**
@@ -174,18 +161,20 @@ class InventaireService extends AbstractController
             return $data;
         }
         $user = $data['user'];
-        // Get Data Params
+        //Get Data Params
         $page = $request->query->get('page');
         /** @var Serializer $serializer */
         $serializer = $this->get('serializer');
+
         $data = $serializer->decode($request->getContent(), 'json');
+
 
         /** @var Inventaire[] $inventory */
         $inventory = $this->generateArrayInventaire($this->getDoctrine()->getRepository(Inventaire::class)->queryInventoryByGroupeIsFinished($user, $finished ? 1 : 0));
 
         if (!isset($data['page'])) {
             return [
-                "data" => $inventory,
+                "data" => $inventory["data"],
                 "statusCode" => Response::HTTP_OK
             ];
         }
@@ -281,9 +270,15 @@ class InventaireService extends AbstractController
     private function generateArrayInventaire($objects): array
     {
         $_objects = [];
-        foreach ($objects as $object) {
-            $_objects [] = $this->generateObjectInventaire($object);
-        }
+        
+            if(isset($objects["data"])){
+            $_objects["count"] = $objects["count"];
+            $objects = $objects["data"];
+            }
+            foreach ($objects as $object) {
+            $_objects["data"][] = $this->generateObjectInventaire($object);
+            }
+           
         return $_objects;
     }
 

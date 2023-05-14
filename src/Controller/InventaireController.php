@@ -61,12 +61,13 @@ class InventaireController extends AbstractController
      */
     public function list(InventaireRepository $inventaireRepository, Request $request): JsonResponse
     {
-        if($request->get('page') && $request->get('limit')){
-            $data = $this->service->getAllWithPagination($inventaireRepository,$request);
-        }else{
+        if ($request->get('page') && $request->get('limit')) {
+            $data = $this->service->getAllWithPagination($inventaireRepository, $request);
+            return new JsonResponse(["count" => $data['count'], "data" => $data['data']], $data['statusCode']);
+        } else {
         $data = $this->service->getAll($request);
+            return new JsonResponse($data["data"], $data['statusCode']);
         }
-        return new JsonResponse($data['data'], $data['statusCode']);
     }
 
     /**
@@ -95,15 +96,15 @@ class InventaireController extends AbstractController
      * @SWG\Tag(name="Inventaire")
      * @return JsonResponse
      */
-    public function listInventoryFinished(InventaireRepository $inventaireRepository,Request $request): JsonResponse
+    public function listInventoryFinished(InventaireRepository $inventaireRepository, Request $request): JsonResponse
     {
-        if($request->get('page') && $request->get('limit'))
-        {
-            $data = $this->service->getAllFinishedWithPagination($inventaireRepository,$request, true);
-        }else{
+        if ($request->get('page') && $request->get('limit')) {
+            $data = $this->service->getAllFinishedWithPagination($inventaireRepository, $request, true);
+            return new JsonResponse(['count' => $data['count'], 'data' => $data['data']], $data['statusCode']);
+        } else {
         $data = $this->service->getAllFinished($request, true);
+            return new JsonResponse($data["data"], $data['statusCode']);
         }
-        return new JsonResponse($data['data'], $data['statusCode']);
     }
 
     /**
@@ -126,10 +127,15 @@ class InventaireController extends AbstractController
      * @SWG\Tag(name="Inventaire")
      * @return JsonResponse
      */
-    public function listInventorynotFinished(Request $request): JsonResponse
+    public function listInventorynotFinished(InventaireRepository $inventaireRepository,Request $request): JsonResponse
     {
+        if ($request->get('page') && $request->get('limit')) {
+            $data = $this->service->getAllFinishedWithPagination($inventaireRepository, $request, false);
+            return new JsonResponse(['count' => $data['count'], 'data' => $data['data']], $data['statusCode']);
+        } else {
         $data = $this->service->getAllFinished($request, false);
         return new JsonResponse($data['data'], $data['statusCode']);
+        }
     }
 
     /**
@@ -155,6 +161,7 @@ class InventaireController extends AbstractController
      */
     public function show(Inventaire $inventaire, Request $request): JsonResponse
     {
+        
         $data = $this->service->getOne($request, $inventaire);
         return new JsonResponse($data['data'], $data['statusCode']);
     }
@@ -406,4 +413,6 @@ class InventaireController extends AbstractController
 
         return $this->json($result['data'], $result['statusCode']);
     }
+    
+    //test 
 }

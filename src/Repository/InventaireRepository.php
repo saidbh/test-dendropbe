@@ -32,7 +32,6 @@ class InventaireRepository extends ServiceEntityRepository
 
         // returns an array of Product objects
         return $query->execute();
-
     }
 
     public function findInventoryTreeByAdrOrTown(string $infos, User $user)
@@ -46,7 +45,8 @@ class InventaireRepository extends ServiceEntityRepository
                 g.id=:groupeId) OR g.groupeType=:type) 
                 AND (
                 (i.arbre = a.id AND (a.address LIKE :val OR a.ville LIKE :val) ) OR (i.epaysage = e.id AND (e.address LIKE :val OR e.ville LIKE :val)))
-                ORDER BY i.id ASC')
+                ORDER BY i.id ASC'
+            )
             ->setParameter('id', $user->getId())->setParameter('groupeId', $user->getGroupe()->getId())
             ->setParameter('type', 'DENDROMAP')
             ->setParameter('val', $infos . '%')
@@ -80,10 +80,10 @@ class InventaireRepository extends ServiceEntityRepository
             return $this->getEntityManager()
                 ->createQuery(
                     'SELECT i FROM App\Entity\Inventaire i
-                     where i.user in (select u.id FROM App\Entity\User u where u.groupe=:groupeId) ORDER BY i.id DESC')
+                     where i.user in (select u.id FROM App\Entity\User u where u.groupe=:groupeId) ORDER BY i.id DESC'
+                )
                 ->setParameter('groupeId', $user->getGroupe()->getId())
                 ->execute();
-
         } else {
 
             return $this->findBy([], ['id' => 'DESC']);
@@ -98,7 +98,8 @@ class InventaireRepository extends ServiceEntityRepository
     {
         
         if (strtoupper($user->getGroupe()->getGroupeType() !== 'DENDROMAP')) {
-            return $this->getEntityManager()
+            // sql list inventaire
+            $sql = $this->getEntityManager()
                 ->createQuery(
                     'SELECT i FROM App\Entity\Inventaire i
                      where i.user in (select u.id FROM App\Entity\User u where u.groupe=:groupeId) ORDER BY i.id DESC'
@@ -107,9 +108,18 @@ class InventaireRepository extends ServiceEntityRepository
                 ->setFirstResult(($page - 1) * $limit)
                 ->setMaxResults($limit)
                 ->execute();
-        } 
-        else {
-            return $this->getEntityManager()->createQueryBuilder('i')
+            //count list inventaire
+            $count = $this->getEntityManager()
+                ->createQuery(
+                    'SELECT count(i) FROM App\Entity\Inventaire i
+                     where i.user in (select u.id FROM App\Entity\User u where u.groupe=:groupeId)'
+                )
+                ->setParameter('groupeId', $user->getGroupe()->getId())
+                ->execute();
+            return ['data' => $sql, 'count' => $count[0][1]];
+        } else {
+            // sql list inventaire
+            $sql = $this->getEntityManager()->createQueryBuilder('i')
                 ->select('i')
                 ->from('App\Entity\Inventaire', 'i')
                 ->orderBy('i.id', 'DESC')
@@ -117,8 +127,14 @@ class InventaireRepository extends ServiceEntityRepository
                 ->setMaxResults($limit)
                 ->getQuery()
                 ->getResult();
+            //count list inventaire
+            $count = $this->getEntityManager()->createQueryBuilder('i')
+                ->select('count(i)')
+                ->from('App\Entity\Inventaire', 'i')
+                ->getQuery()
+                ->getResult();
+            return ['data' => $sql, 'count' => $count[0][1]];
         }
-        
     }
      
     /**
@@ -126,10 +142,10 @@ class InventaireRepository extends ServiceEntityRepository
      * @return array
      *
      * */
-    public function queryInventoryByGroupeIsFinishedPagination($page, $limit,$user, $isFinished): array
+    public function queryInventoryByGroupeIsFinishedPagination($page, $limit,$user,$isFinished): array
     {
         if (strtoupper($user->getGroupe()->getGroupeType() !== 'DENDROMAP')) {
-        return $this->getEntityManager()
+            $sql = $this->getEntityManager()
             ->createQuery(
                 'SELECT i FROM App\Entity\Inventaire i
                      where i.user in (select u.id FROM App\Entity\User u where u.groupe=:groupeId) AND i.isFinished = :isFinished ORDER BY i.id DESC'
@@ -139,21 +155,39 @@ class InventaireRepository extends ServiceEntityRepository
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->execute();
+
+            $count = $this->getEntityManager()
+                ->createQuery(
+                    'SELECT count(i) FROM App\Entity\Inventaire i
+                     where i.user in (select u.id FROM App\Entity\User u where u.groupe=:groupeId) AND i.isFinished = :isFinished'
+                )
+                ->setParameter('groupeId', $user->getGroupe()->getId())
+                ->setParameter('isFinished', $isFinished)
+                ->execute();
+
+            return ['data' => $sql, 'count' => $count[0][1]];
         } else {
-            return $this->getEntityManager()->createQueryBuilder('i')
+            $sql = $this->getEntityManager()->createQueryBuilder('i')
                 ->select('i')
                 ->from('App\Entity\Inventaire', 'i')
                 ->where("i.isFinished = :isFinished")
-                ->setParameter('isFinished',$isFinished)
+                ->setParameter('isFinished', $isFinished)
                 ->orderBy('i.id', 'DESC')
                 ->setFirstResult(($page - 1) * $limit)
                 ->setMaxResults($limit)
                 ->getQuery()
                 ->getResult();            
-        }
 
-
+            $count = $this->getEntityManager()->createQueryBuilder('i')
+                ->select('count(i)')
+                ->from('App\Entity\Inventaire', 'i')
+                ->where("i.isFinished = :isFinished")
+                ->setParameter('isFinished', $isFinished)
+                ->getQuery()
+                ->getResult();
             
+            return ['data' => $sql, 'count' => $count[0][1]];
+        }
     }
 
     /**
@@ -167,11 +201,11 @@ class InventaireRepository extends ServiceEntityRepository
             return $this->getEntityManager()
                 ->createQuery(
                     'SELECT i FROM App\Entity\Inventaire i
-                     where i.user in (select u.id FROM App\Entity\User u where u.groupe=:groupeId) AND i.isFinished = :isFinished ORDER BY i.id DESC')
+                     where i.user in (select u.id FROM App\Entity\User u where u.groupe=:groupeId) AND i.isFinished = :isFinished ORDER BY i.id DESC'
+                )
                 ->setParameter('groupeId', $user->getGroupe()->getId())
                 ->setParameter('isFinished', $isFinished)
                 ->execute();
-
         } else {
             return $this->findBy(["isFinished" => $isFinished], ['id' => 'DESC']);
         }
@@ -193,11 +227,11 @@ class InventaireRepository extends ServiceEntityRepository
                 u.groupe=g.id AND 
                 g.id=:groupeId) OR g.groupeType=:type) AND i.isFinished =:finished  AND (
                 (i.arbre = a.id AND (a.address LIKE :val OR a.ville LIKE :val) ) OR (i.epaysage = e.id AND (e.address LIKE :val OR e.ville LIKE :val)))
-            ')->setParameter('id', $user->getId())->setParameter('groupeId', $user->getGroupe()->getId())
+            '
+            )->setParameter('id', $user->getId())->setParameter('groupeId', $user->getGroupe()->getId())
             ->setParameter('type', 'DENDROMAP')
             ->setParameter('finished', $isFinished)
             ->setParameter('val', $filter . '%')
             ->execute();
     }
-
 }

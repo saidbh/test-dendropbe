@@ -40,8 +40,14 @@ class PlantationController extends AbstractController
      */
     public function index(Request $request):JsonResponse
     {
-        $data = $this->service->getPlantations($request);
-        return $this->json($data['data'], $data['statusCode']);
+        
+        if($request->get('page') && $request->get('limit')){
+            $data = $this->service->getPlantations($request);
+            return $this->json(["count"=>$data['count'], "data"=>$data['data']], $data['statusCode']); 
+        }else{
+            $data = $this->service->getPlantations($request);
+            return $this->json($data['data'], $data['statusCode']); 
+        }
     }
 
     /**

@@ -137,20 +137,36 @@ class PlantationService extends AbstractController
         if (!isset($data['user']) || !$data['user']) {
             return $data;
         }
-
+        $page = $request->get('page');
+        $limit = $request->get('limit');
         $user = $data['user'];
-        $objects = $this->repository->findBy([], ['id' => 'DESC']);
-
+        // GET PAGINATION
+        if(isset($page)){
+            $objects = $this->repository->findAllPlantation($page,$limit,$user);
+            $count = $objects['count'];
+            $objects = $objects['data'];
+        }else{
+            
+            $objects = $this->repository->findBy([], ['id' => 'DESC']);
+        }
         $result = [];
         foreach ($objects as $obj) {
             if ($obj->getUserAdded()->getId() === $user->getId()) {
                 array_push($result, $obj);
             }
         }
-        return [
-            "data" => $this->generateArray($result),
-            "statusCode" => Response::HTTP_OK
-        ];
+        if(isset($count)){
+            return [
+                "count" => $count,
+                "data" => $this->generateArray($result),
+                "statusCode" => Response::HTTP_OK
+            ];
+        }else{
+            return [
+                "data" => $this->generateArray($result),
+                "statusCode" => Response::HTTP_OK
+            ];
+        }
     }
 
     public function getPlantation(Request $request, Plantation $plantation)

@@ -19,6 +19,30 @@ class PlantationRepository extends ServiceEntityRepository
         parent::__construct($registry, Plantation::class);
     }
 
+
+    public function findAllPlantation($page, $limit,$user)
+    {
+        $sql= $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('p.userAdded = :id')
+            ->setParameter('id', $user->getId())
+            ->orderBy('p.id', 'DESC')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult()
+        ;
+        $count = $this->createQueryBuilder('p')
+            ->select('COUNT(p)')
+            ->where('p.userAdded = :id')
+            ->setParameter('id', $user->getId())
+            ->getQuery()
+            ->getResult()[0][1];
+
+        return ["data" => $sql, "count" => $count];
+        
+    }
+
     // /**
     //  * @return Plantation[] Returns an array of Plantation objects
     //  */
