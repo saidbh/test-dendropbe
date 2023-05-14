@@ -13,12 +13,12 @@ doctrine:
             polygon: CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
             geography: CrEOF\Spatial\DBAL\Types\GeographyType
         # configure these for your database server
-        driver: 'pdo_mysql'
-        server_version: '10.2.14'
-        charset: utf8mb4
+        driver: 'postgresql'
+        server_version: '15.2'
+        charset: utf8
         default_table_options:
-            charset: utf8mb4
-            collate: utf8mb4_unicode_ci
+            charset: utf8
+            collate: utf8_unicode_ci
 
         url: '%env(resolve:DATABASE_URL)%'
         mapping_types:
