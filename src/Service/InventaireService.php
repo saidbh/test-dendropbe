@@ -197,7 +197,6 @@ class InventaireService extends AbstractController
         /** @var Serializer $serializer */
         $serializer = $this->get('serializer');
         $data = $serializer->decode($request->getContent(), 'json');
-
         if (!isset($data['lat']) || !isset($data['lng'])) {
             return [
                 'data' => [
@@ -213,7 +212,6 @@ class InventaireService extends AbstractController
         $data = $data['position'] == 'RADIUS' ?
             $this->getInventoryByRadius($data, $inventaires, (!$data['espece'] && !$data['codeSite'] && !$data['critere'] && !$data['isFinished']))
          : $this->getAllInventoryWithoutRadius($data, $inventaires, (!$data['espece'] && !$data['codeSite'] && !$data['critere'] && !$data['isFinished']));
-
         return [
             'data' => $data,
             'statusCode' => Response::HTTP_OK
@@ -612,11 +610,10 @@ class InventaireService extends AbstractController
         $_user ['profil'] = $user->getProfil()->getName();
         $_object['user'] = $_user;
         // FIN USER
-
         $_object['isFinished'] = $object->getIsFinished();
         $_object['createdAt'] = $object->getCreatedAt()->format('Y-m-d\TH:i:sO');
         $_object['updatedAt'] = $object->getUpdatedAt() ? $object->getUpdatedAt()->format('Y-m-d\TH:i:sO') : '';
-
+        
         return $_object;
     }
 
@@ -872,18 +869,17 @@ class InventaireService extends AbstractController
      */
     public function getInventoryByRadius(array $data, array $inventaires, bool $isSearching):array {
         $result = [];
+        
         foreach ($inventaires as $inventory) {
             if (MapService::isInventoryInZone($inventory, $data)) {
                 if(!$isSearching) {
-                    self::filterInventoryMap($inventory, $data) && array_push($result,  $this->generateObjectInventaire($inventory));
-                    
+                    self::filterInventoryMap($inventory, $data) && array_push($result,  $this->generateObjectInventaire($inventory));  
                 } else {
                     array_push($result,  $this->generateObjectInventaire($inventory));
-                    
-                }
-                return $result;
+                };
             }
         }
+        return $result;
     }
 
     /**

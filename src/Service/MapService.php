@@ -102,6 +102,7 @@ class MapService
     public static function isRadiusAround(array $position, $lat, $lng): bool
     {
         $data = sqrt(pow(($position['lat'] - $lat), 2) + pow(($position['lng'] - $lng), 2));
+        
         return $data < self::RADIUS;
     }
 
@@ -112,12 +113,16 @@ class MapService
      */
     public static function isInventoryInZone(Inventaire $inventory, array $data):bool {
         if(strtoupper( $inventory->getType()) === 'ARBRE') {
+            
             $coord = self::serializeCoord($inventory->getArbre());
             return self::isRadiusAround(['lat' => $data['lat'], 'lng' => $data['lng']], $coord['lat'], $coord['long']);
         } else {
             $coords = MapService::serializeCoord($inventory->getEpaysage());
-            return MapService::isRadiusAround(['lat' => $data['lat'], 'lng' => $data['lng']], $coords[0]['lat'], $coords[0]['long']);
+            if(isset($coords[0])){
+                return MapService::isRadiusAround(['lat' => $data['lat'], 'lng' => $data['lng']], $coords[0]['lat'], $coords[0]['long']);
+            }else{
+                return false;
+            }
         }
     }
 }
-
