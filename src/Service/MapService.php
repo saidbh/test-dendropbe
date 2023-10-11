@@ -38,7 +38,7 @@ class MapService
             $result[$value->types[0]] = $value->long_name;
         }
 
-        $address = $result["route"] ? $result["street_number"] . " " . $result["route"] : $result['plus_code'];
+        $address = isset($result["route"]) ? $result["street_number"] . " " . $result["route"] : ($result['plus_code'] ?? "");
         $city = $result["locality"] ?? $result["administrative_area_level_1"];
         $country = $result["country"];
 
@@ -102,7 +102,6 @@ class MapService
     public static function isRadiusAround(array $position, $lat, $lng): bool
     {
         $data = sqrt(pow(($position['lat'] - $lat), 2) + pow(($position['lng'] - $lng), 2));
-        
         return $data < self::RADIUS;
     }
 
@@ -113,16 +112,12 @@ class MapService
      */
     public static function isInventoryInZone(Inventaire $inventory, array $data):bool {
         if(strtoupper( $inventory->getType()) === 'ARBRE') {
-            
             $coord = self::serializeCoord($inventory->getArbre());
             return self::isRadiusAround(['lat' => $data['lat'], 'lng' => $data['lng']], $coord['lat'], $coord['long']);
         } else {
             $coords = MapService::serializeCoord($inventory->getEpaysage());
-            if(isset($coords[0])){
-                return MapService::isRadiusAround(['lat' => $data['lat'], 'lng' => $data['lng']], $coords[0]['lat'], $coords[0]['long']);
-            }else{
-                return false;
-            }
+            return MapService::isRadiusAround(['lat' => $data['lat'], 'lng' => $data['lng']], isset($coords[0]) ? $coords[0]['lat'] : 0, isset($coords[0]) ? $coords[0]['long'] : 0);
         }
     }
 }
+
