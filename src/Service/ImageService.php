@@ -39,6 +39,7 @@ class ImageService extends AbstractController
         }
         return $fileName;
     }
+    //comment
 
     /**
      * @return string
