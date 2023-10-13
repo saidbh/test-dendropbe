@@ -20,7 +20,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use App\Message\TokenValidMessage;
 
 /**
- * @Route("/contact")
+ * @Route("/api/contact")
  */
 class ContactController extends AbstractController
 {
