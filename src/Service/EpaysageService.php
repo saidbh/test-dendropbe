@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\Serializer;
-
+use Location\Polygon as PolygonArea;
 // SERVICE
 class EpaysageService extends AbstractController
 {
@@ -410,7 +410,7 @@ class EpaysageService extends AbstractController
         }
         // CAS D'UN POLYGON
         $pointTab = [];
-        $polygonToCalculateArea = new \Location\Polygon();
+        $polygonToCalculateArea = new PolygonArea();
         foreach ($addObject['coord'] as $coord) {
             $point = new Point($coord['lat'], $coord['long']);
             array_push($pointTab, $point);

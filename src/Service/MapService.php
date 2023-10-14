@@ -37,8 +37,8 @@ class MapService
         foreach ($infos as $key => $value) {
             $result[$value->types[0]] = $value->long_name;
         }
-
-        $address = isset($result["route"]) ? $result["street_number"] . " " . $result["route"] : ($result['plus_code'] ?? "");
+        $street_number = isset($result["street_number"]) ? $result["street_number"] : "";
+        $address = isset($result["route"]) ? $street_number . " " . $result["route"] : ($result['plus_code'] ?? "");
         $city = $result["locality"] ?? $result["administrative_area_level_1"];
         $country = $result["country"];
 
@@ -89,7 +89,7 @@ class MapService
                 'long' => $object->getCoord()->getY()
             ];
         }
-        
+
         return [];
     }
 
@@ -110,8 +110,9 @@ class MapService
      * @param array $data
      * @return bool
      */
-    public static function isInventoryInZone(Inventaire $inventory, array $data):bool {
-        if(strtoupper( $inventory->getType()) === 'ARBRE') {
+    public static function isInventoryInZone(Inventaire $inventory, array $data): bool
+    {
+        if (strtoupper($inventory->getType()) === 'ARBRE') {
             $coord = self::serializeCoord($inventory->getArbre());
             return self::isRadiusAround(['lat' => $data['lat'], 'lng' => $data['lng']], $coord['lat'], $coord['long']);
         } else {
@@ -120,4 +121,3 @@ class MapService
         }
     }
 }
-
