@@ -161,7 +161,6 @@ class InventaireController extends AbstractController
      */
     public function show(Inventaire $inventaire, Request $request): JsonResponse
     {
-        
         $data = $this->service->getOne($request, $inventaire);
         return new JsonResponse($data['data'], $data['statusCode']);
     }
@@ -413,6 +412,39 @@ class InventaireController extends AbstractController
 
         return $this->json($result['data'], $result['statusCode']);
     }
-    
-    //test 
+
+
+    /**
+     * Upload inventory list from a CSV file
+     *
+     * @Route("/upload", name="upload_inventaires", methods={"POST"})
+     * @SWG\Post(
+     *     summary="Upload inventory list from a CSV file",
+     *     @SWG\Response(
+     *         response=200,
+     *         description="Returns an array of Inventaire objects",
+     *         @SWG\Schema(
+     *             type="array",
+     *             @SWG\Items(ref=@Model(type=Inventaire::class, groups={"read"}))
+     *         )
+     *     ),
+     *     @SWG\Parameter(
+     *         name="file",
+     *         in="formData",
+     *         type="file",
+     *         description="Inventory CSV file to upload",
+     *         required=true
+     *     ),
+     *     @SWG\Tag(name="Inventaire")
+     * )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function uploadInventory(Request $request): JsonResponse
+    {
+        $result = $this->service->uploadInventoryFile($request);
+
+        return $this->json($result['data'], $result['statusCode']);
+    }
 }

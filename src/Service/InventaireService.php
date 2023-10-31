@@ -11,7 +11,11 @@ use App\Form\InventaireType;
 use App\Repository\InventaireRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Persistence\ObjectManager;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Xls;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
@@ -930,5 +934,32 @@ class InventaireService extends AbstractController
         } else if(!$data['espece'] && $data['codeSite'] && $data['critere'] && $data['isFinished']) {
             return FilterMapService::filtertreeRemarquable($inventory) && FilterMapService::filterCodeSiteOrNumSujet($data['codeSite'], $inventory) && FilterMapService::filterBrouillon($inventory);
         }
+    }
+
+    public function uploadInventoryFile($request)
+    {
+        try
+        {
+            $inputFileName = $request->files->get("file");
+            if ($inputFileName) {
+
+                $reader = new Xlsx();
+                $spreadsheet = $reader->load($inputFileName);
+                $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+                dd($sheetData);
+            } else {
+                return [
+                    "message" => "File not found in the request",
+                    "errorCode" => 400
+                ];
+            }
+
+        }catch(\Exception $exception)
+            {
+                return [
+                    "message" => "Une erreur s'est produite lors du traitement du fichier !",
+                    "errorCode" => 500
+                ];
+            }
     }
 }
