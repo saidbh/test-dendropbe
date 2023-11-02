@@ -940,14 +940,15 @@ class InventaireService extends AbstractController
 
     public function uploadInventoryFile($request)
     {
-//        $data = $this->tokenService->MiddlewareNormalUser($request->headers->get('Authorization'));
-//        if (!isset($data['user']) || !$data['user']) {
-//            return [
-//                "message" => $data,
-//                "errorCode" => 401
-//            ];
-//        }
-        $user = $this->getDoctrine()->getManager()->getRepository(User::class)->findOneBy(["id" => 1]);
+        $data = $this->tokenService->MiddlewareNormalUser($request->headers->get('Authorization'));
+        if (!isset($data['user']) || !$data['user']) {
+            return [
+                "message" => $data,
+                "errorCode" => 401
+            ];
+        }
+        $user = $data['user'];
+
         try
         {
             $inputFileName = $request->files->get("file");
