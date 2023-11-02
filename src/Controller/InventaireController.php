@@ -445,6 +445,6 @@ class InventaireController extends AbstractController
     {
         $result = $this->service->uploadInventoryFile($request);
 
-        return $this->json($result['data'], $result['statusCode']);
+        return $this->json($result['message'], $result['errorCode']);
     }
 }

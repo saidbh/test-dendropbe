@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Arbre;
 use App\Entity\Epaysage;
+use App\Entity\Espece;
 use App\Entity\Essence;
 use App\Entity\Inventaire;
 use App\Entity\User;
@@ -12,9 +13,9 @@ use App\Repository\InventaireRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -938,28 +939,125 @@ class InventaireService extends AbstractController
 
     public function uploadInventoryFile($request)
     {
+        $data = $this->tokenService->MiddlewareNormalUser($request->headers->get('Authorization'));
+        if (!isset($data['user']) || !$data['user']) {
+            return [
+                "message" => $data,
+                "errorCode" => 401
+            ];
+        }
+        $user = $data['user'];
         try
         {
             $inputFileName = $request->files->get("file");
-            if ($inputFileName) {
-
-                $reader = new Xlsx();
-                $spreadsheet = $reader->load($inputFileName);
-                $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
-                dd($sheetData);
-            } else {
+            if (!$inputFileName instanceof UploadedFile)
+            {
                 return [
-                    "message" => "File not found in the request",
-                    "errorCode" => 400
+                    "message" => "Erreur de fichier !",
+                    "errorCode" => 500
+                ];
+            }
+            $inputFileType = IOFactory::identify($inputFileName);
+            $reader = IOFactory::createReader($inputFileType);
+            $spreadsheet = $reader->load($inputFileName);
+            $sheetData = $spreadsheet->getActiveSheet()->toArray();
+            unset($sheetData[0]);
+            if (count($sheetData)>=1)
+            {
+                foreach ($sheetData as $sheet)
+                {
+                    $arbre = new Arbre();
+                    $espece = $this->getDoctrine()->getManager()->getRepository(Espece::class)->findOneBy([
+                        "userAdded"=> $user,
+                        "genre" => $sheet[3],
+                        "cultivar" => $sheet[4],
+                        "nomFr" => $sheet[5]
+                        ]);
+                    if(!$espece)
+                    {
+                        $espece = new Espece();
+                        $espece->setUserAdded($user);
+                        $espece->setGenre($sheet[3]);
+                        $espece->setCultivar($sheet[4]);
+                        $espece->setNomFr($sheet[5]);
+                        $espece->setTarif($sheet[8]);
+                        $this->getDoctrine()->getManager()->persist($espece);
+                        $this->getDoctrine()->getManager()->flush();
+                    }
+                    $arbre->setEspece($espece);
+                    $arbre->setNumSujet($sheet[9]);
+                    //$arbre->set???($sheet[7]);
+                    $arbre->setCodeSite($sheet[10]);
+                    $arbre->setHauteur($sheet[11]);
+                    $arbre->setDiametre($sheet[12]);
+                    $arbre->setAddress($sheet[13]);
+                    $arbre->setVille($sheet[14]);
+                    $arbre->setPays($sheet[17]);
+                    $arbre->setCoord("POINT($sheet[20],$sheet[21])");
+                    //$arbre->set??($sheet[22]));
+                    $arbre->setCaractPiedOther($sheet[22]);
+                    if (str_contains($sheet[23],"tronc-unique"))
+                    {
+                        $arbre->setCaractTronc($sheet[23]);
+                    }
+                    elseif(str_contains($sheet[23] ,"Tronc multiple"))
+                    {
+                        $arbre->setCaractTroncMultiples($sheet[23]);
+                    }
+                    $arbre->setPortArbre($sheet[24]);
+                    $arbre->setStadeDev($sheet[25]);
+                    $arbre->setCritere($sheet[26]);
+                    $arbre->setEtatSanCollet($sheet[27]);
+                    $arbre->setEtatSanTronc($sheet[28]);
+                    $arbre->setEtatSanHouppier($sheet[29]);
+                    $arbre->setEtatSanGeneral($sheet[30]);
+                    //$arbre->set????($sheet[31]"Examen general");
+                    $arbre->setRisque(["collet"=> $sheet[32],"tronc"=> $sheet[33] ,"houppier"=> $sheet[34]]);
+                    $arbre->setRisqueGeneral($sheet[35]);
+                    $arbre->setImplantation($sheet[36]);
+                    $arbre->setDomaine($sheet[37]);
+                    $arbre->setProximiteOther($sheet[38]);
+                    $arbre->setDict($sheet[39]);
+                    $arbre->setNuisance($sheet[40]);
+                    $arbre->setTauxFreq($sheet[41]);
+                    $arbre->setTypePassage($sheet[42]);
+                    $arbre->setAccessibilite($sheet[43]);
+                    $arbre->setTravauxCollet($sheet[44]);
+                    $arbre->setTravauxTronc($sheet[45]);
+                    $arbre->setTravauxHouppier($sheet[46]);
+                    $arbre->setUserEditedDateTravaux(new \DateTime($sheet[47]));
+
+                    $this->getDoctrine()->getManager()->persist($arbre);
+                    $this->getDoctrine()->getManager()->flush();
+
+                    $intervention = new Inventaire();
+                    $intervention->setUser($user);
+                    $intervention->setArbre($arbre);
+                    //$intervention->setEpaysage($epaysage);
+                    $intervention->setIsFinished(true);
+                    $intervention->setCreatedAt(new \DateTime($sheet[1]));
+                    $intervention->setUpdatedAt(new \DateTime($sheet[19]));
+                    $this->getDoctrine()->getManager()->persist($intervention);
+                    $this->getDoctrine()->getManager()->flush();
+                }
+                return [
+                    "message" => "Fichier traiter avec succee !",
+                    "errorCode" => 200
+                ];
+            }else
+            {
+                return [
+                    "message" => "Fichier vide !",
+                    "errorCode" => 201
                 ];
             }
 
         }catch(\Exception $exception)
-            {
-                return [
-                    "message" => "Une erreur s'est produite lors du traitement du fichier !",
-                    "errorCode" => 500
-                ];
-            }
+        {
+            return [
+                "message" => "Erreur de traitement de fichier !",
+                "errorCode" => 500
+            ];
+        }
     }
 }
