@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 
 class InventaireService extends AbstractController
 {
@@ -939,14 +940,14 @@ class InventaireService extends AbstractController
 
     public function uploadInventoryFile($request)
     {
-        $data = $this->tokenService->MiddlewareNormalUser($request->headers->get('Authorization'));
-        if (!isset($data['user']) || !$data['user']) {
-            return [
-                "message" => $data,
-                "errorCode" => 401
-            ];
-        }
-        $user = $data['user'];
+//        $data = $this->tokenService->MiddlewareNormalUser($request->headers->get('Authorization'));
+//        if (!isset($data['user']) || !$data['user']) {
+//            return [
+//                "message" => $data,
+//                "errorCode" => 401
+//            ];
+//        }
+        $user = $this->getDoctrine()->getManager()->getRepository(User::class)->findOneBy(["id" => 1]);
         try
         {
             $inputFileName = $request->files->get("file");
@@ -977,6 +978,7 @@ class InventaireService extends AbstractController
                     {
                         $espece = new Espece();
                         $espece->setUserAdded($user);
+                        $espece->setName($sheet[5]);
                         $espece->setGenre($sheet[3]);
                         $espece->setCultivar($sheet[4]);
                         $espece->setNomFr($sheet[5]);
@@ -993,34 +995,27 @@ class InventaireService extends AbstractController
                     $arbre->setAddress($sheet[13]);
                     $arbre->setVille($sheet[14]);
                     $arbre->setPays($sheet[17]);
-                    $arbre->setCoord("POINT($sheet[20],$sheet[21])");
+                    $arbre->setCoord(new Point($sheet[20], $sheet[21]));
                     //$arbre->set??($sheet[22]));
                     $arbre->setCaractPiedOther($sheet[22]);
-                    if (str_contains($sheet[23],"tronc-unique"))
-                    {
-                        $arbre->setCaractTronc($sheet[23]);
-                    }
-                    elseif(str_contains($sheet[23] ,"Tronc multiple"))
-                    {
-                        $arbre->setCaractTroncMultiples($sheet[23]);
-                    }
+                    $arbre->setCaractTronc($sheet[23]);
                     $arbre->setPortArbre($sheet[24]);
                     $arbre->setStadeDev($sheet[25]);
                     $arbre->setCritere($sheet[26]);
-                    $arbre->setEtatSanCollet($sheet[27]);
-                    $arbre->setEtatSanTronc($sheet[28]);
-                    $arbre->setEtatSanHouppier($sheet[29]);
-                    $arbre->setEtatSanGeneral($sheet[30]);
+                    $arbre->setEtatSanCollet([$sheet[27]]);
+                    $arbre->setEtatSanTronc([$sheet[28]]);
+                    $arbre->setEtatSanHouppier([$sheet[29]]);
+                    $arbre->setEtatSanGeneral([$sheet[30]]);
                     //$arbre->set????($sheet[31]"Examen general");
                     $arbre->setRisque(["collet"=> $sheet[32],"tronc"=> $sheet[33] ,"houppier"=> $sheet[34]]);
-                    $arbre->setRisqueGeneral($sheet[35]);
+                    $arbre->setRisqueGeneral([$sheet[35]]);
                     $arbre->setImplantation($sheet[36]);
                     $arbre->setDomaine($sheet[37]);
                     $arbre->setProximiteOther($sheet[38]);
                     $arbre->setDict($sheet[39]);
-                    $arbre->setNuisance($sheet[40]);
+                    $arbre->setNuisance([$sheet[40]]);
                     $arbre->setTauxFreq($sheet[41]);
-                    $arbre->setTypePassage($sheet[42]);
+                    $arbre->setTypePassage([$sheet[42]]);
                     $arbre->setAccessibilite($sheet[43]);
                     $arbre->setTravauxCollet($sheet[44]);
                     $arbre->setTravauxTronc($sheet[45]);
