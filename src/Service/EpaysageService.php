@@ -455,4 +455,34 @@ class EpaysageService extends AbstractController
             'essence' => $inventaire->getEpaysage()->getEssence()
         ];
     }
+
+    public function getTotalWoodedSpace()
+    {
+        try {
+            $area = array();
+            $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();
+            foreach ($epaysage as $item)
+            {
+                array_push($area,$item->getArea());
+            }
+
+            $squareMeters = array_sum($area);
+            return [
+                "data" => $this->squareMetersToHectares($squareMeters),
+                "errorCode" => 200
+            ];
+
+        }catch(\Exception $exception)
+        {
+            return [
+                "data" => "Une erreur est survenue ! Impossible de calculer l'espace boisee !",
+                "errorCode" => 500
+            ];
+        }
+    }
+
+    private function squareMetersToHectares($squareMeters) {
+        // 1 hectare = 10,000 square meters
+        return $squareMeters / 10000;
+    }
 }

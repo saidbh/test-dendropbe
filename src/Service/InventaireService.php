@@ -948,7 +948,6 @@ class InventaireService extends AbstractController
             ];
         }
         $user = $data['user'];
-
         try
         {
             $inputFileName = $request->files->get("file");
@@ -975,6 +974,13 @@ class InventaireService extends AbstractController
                         "cultivar" => $sheet[4],
                         "nomFr" => $sheet[5]
                         ]);
+                    $point = new Point($sheet[20], $sheet[21]);
+                    if (!$point instanceof Point) {
+                        return [
+                            'data' => ['message' => 'Coordonnées géographiques ne sont pas bonnes'],
+                            'statusCode' => Response::HTTP_BAD_REQUEST
+                        ];
+                    }
                     if(!$espece)
                     {
                         $espece = new Espece();
@@ -996,7 +1002,7 @@ class InventaireService extends AbstractController
                     $arbre->setAddress($sheet[13]);
                     $arbre->setVille($sheet[14]);
                     $arbre->setPays($sheet[17]);
-                    $arbre->setCoord(new Point($sheet[20], $sheet[21]));
+                    $arbre->setCoord($point);
                     //$arbre->set??($sheet[22]));
                     $arbre->setCaractPiedOther($sheet[22]);
                     $arbre->setCaractTronc($sheet[23]);

@@ -111,4 +111,18 @@ class EpaysageController extends AbstractController
         return new JsonResponse($data['data'], $data['statusCode']);
     }
 
+    /**
+     * @Route("/total/wooded-space", name="get_total_wooded-space", methods="GET")
+     * @SWG\Response(
+     *  response=200,
+     *     description="return an object of total wooded space HA",
+     * )
+     * @SWG\Tag(name="WoodedSpace")
+     * @return JsonResponse
+     */
+    public function getTotalWoodedSpace(): JsonResponse
+    {
+        $data = $this->service->getTotalWoodedSpace();
+        return new JsonResponse($data['data'], $data['errorCode']);
+    }
 }
