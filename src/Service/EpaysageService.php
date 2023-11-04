@@ -461,6 +461,13 @@ class EpaysageService extends AbstractController
         try {
             $area = array();
             $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();
+            if (count($epaysage) == 0)
+            {
+                return [
+                    "data" => 0,
+                    "errorCode" => 200
+                ];
+            }
             foreach ($epaysage as $item)
             {
                 array_push($area,$item->getArea());
