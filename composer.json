@@ -12,7 +12,7 @@
     "creof/doctrine2-spatial": "~1",
     "doctrine/annotations": "^1.0",
     "doctrine/common": "^2",
-    "doctrine/doctrine-bundle": "^2",
+    "doctrine/doctrine-bundle": "*",
     "doctrine/doctrine-migrations-bundle": "^2",
     "doctrine/orm": "^2",
     "firebase/php-jwt": "^5.0",

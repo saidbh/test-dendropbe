@@ -126,7 +126,7 @@ class TokenService extends AbstractController
                     'message' => 'Access refusé',
                     'errorCode' => 401
                 ],
-                'statusCode' => self::NOT_AUTHORIZATION
+                'statusCode' => self::NOT_AUTHORIZATION,
             ];
         }
 

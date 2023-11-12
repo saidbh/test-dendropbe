@@ -35,6 +35,8 @@ class InventaireService extends AbstractController
     private $_travauxService;
     private $_userRepository;
 
+    private $historyService;
+
     const TYPE_TREE = ['ARBRE', 'ALIGNEMENT'];
 
     public function __construct(
@@ -46,7 +48,8 @@ class InventaireService extends AbstractController
         EpaysageService    $epaysageService,
         EssenceService     $essenceService,
         TravauxService     $travauxService,
-        UserRepository     $userRepository
+        UserRepository     $userRepository,
+        HistoryService     $historyService
     )
     {
         $this->tokenService = $tokenService;
@@ -58,6 +61,7 @@ class InventaireService extends AbstractController
         $this->_essenceService = $essenceService;
         $this->_travauxService = $travauxService;
         $this->_userRepository = $userRepository;
+        $this->historyService = $historyService;
     }
 
     /**
@@ -371,6 +375,16 @@ class InventaireService extends AbstractController
             }
 
             $this->_travauxService->validTravauxInventory($inventory);
+           $historyResponse = $this->historyService->addHistory($inventory);
+           if ($historyResponse['errorCode'] != 200)
+           {
+               return [
+                   "data" => [
+                       "message" => $historyResponse['data']
+                   ],
+                   "statusCode" => $historyResponse['errorCode']
+               ];
+           }
         }
         return [
             "data" => [
