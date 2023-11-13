@@ -216,7 +216,7 @@ class HistoryService
                 $history = $this->entityManager->getRepository(History::class)->findOneBy(['user' => $user,'id' => $historyId]);
                 foreach ($files as $file)
                 {
-                    $filename = $this->ImageService->addImage($file,$this->parameterBag->get('history_files'));
+                    $filename = $this->ImageService->addImage($file,$this->parameterBag->get('history_files'),false);
                     if (!isset($filename['data']))
                     {
                         $docs = new HistoryDocs();
