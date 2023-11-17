@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Promotions;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Stripe\Coupon;
@@ -12,16 +13,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request as RequestService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+
 
 class StripeService extends AbstractController
 {
     private $_tokenService;
     private $_forfaitService;
+    private $parameterBag;
 
-    public function __construct(TokenService $tokenService, ForfaitService $forfaitService)
+    public function __construct(TokenService $tokenService, ForfaitService $forfaitService,ParameterBagInterface $parameterBag)
     {
         $this->_tokenService = $tokenService;
         $this->_forfaitService = $forfaitService;
+        $this->parameterBag = $parameterBag;
     }
     // FOR A SUBSCRIPTION
     /*
@@ -361,5 +366,90 @@ class StripeService extends AbstractController
             'data' => null,
             'statusCode' => Response::HTTP_OK
         ];
+    }
+
+    public function deletePmotionCode($request)
+    {
+        $input = $request->request->all();
+        if (!isset($input['promotionCodeId']) || $input['promotionCodeId'] == null)
+        {
+            return [
+                'data' => [
+                    'message' => 'Information obligatoire'
+                ],
+                'statusCode' => 404
+            ];
+        }
+        try {
+            Stripe::setApiKey($this->parameterBag->get('STRIPE_SECRET_KEY'));
+            // Use the Stripe API to delete the promotion code
+            $promotionCode = \Stripe\Coupon::retrieve($input['promotionCodeId']);
+            $response = $promotionCode->delete();
+
+            return [
+                'data' => [
+                    'message' => $response
+                ],
+                'statusCode' => 200
+            ];
+        } catch (\Exception $exception) {
+            return [
+                'data' => [
+                    'message' => $exception->getMessage()
+                ],
+                'statusCode' => 500
+            ];
+        }
+
+    }
+
+    public function createPromotionCode($request):array
+    {
+        try {
+            $inputs = $request->request->all();
+            if ($this->getDoctrine()->getRepository(Promotions::class)->findOneBy(['promotionCode' => $inputs['promotionCode']]))
+            {
+                return [
+                    'data' => [
+                        'message' => 'Code existe deja !'
+                    ],
+                    'statusCode' => 201
+                ];
+            }
+            Stripe::setApiKey($this->parameterBag->get('STRIPE_SECRET_KEY'));
+            // Create a new promotion code using the Stripe API
+            $promotionCode = \Stripe\Coupon::create([
+                'percent_off' => (int)$inputs['value'],
+                'duration' => 'once',
+                'name' => $inputs['promotionCode'],
+                //'amount_off' => 500, // Amount in the smallest currency unit (e.g., cents for USD)
+                'currency' => 'eur',
+                'redeem_by' => strtotime($inputs['end_date']), // Timestamp for the last redemption date
+            ]);
+            $promotions = new Promotions();
+            $promotions->setPromotionId($promotionCode['id']);
+            $promotions->setPromotionCode($inputs['promotionCode']);
+            $promotions->setQuantity($inputs['quantity']);
+            $promotions->setStartDate(new \DateTime($inputs['start_date']));
+            $promotions->setEndDate(new \DateTime($inputs['end_date']));
+            $promotions->setType($inputs['type']);
+            $promotions->setValue($inputs['value']);
+            $this->getDoctrine()->getManager()->persist($promotions);
+            $this->getDoctrine()->getManager()->flush();
+
+            return [
+                'data' => [
+                    'message' => 'Code ajouter avec succee !'
+                ],
+                'statusCode' => 200
+            ];
+        } catch (\Exception $exception) {
+            return [
+                'data' => [
+                    'message' => $exception->getMessage()
+                ],
+                'statusCode' => 500
+            ];
+        }
     }
 }
