@@ -385,6 +385,9 @@ class StripeService extends AbstractController
             // Use the Stripe API to delete the promotion code
             $promotionCode = \Stripe\Coupon::retrieve($input['promotionCodeId']);
             $response = $promotionCode->delete();
+            $promotion = $this->getDoctrine()->getRepository(Promotions::class)->findOneBy(['promotionId' => $input['promotionCodeId']]);
+            $this->getDoctrine()->getManager()->remove($promotion);
+            $this->getDoctrine()->getManager()->flush();
 
             return [
                 'data' => [
