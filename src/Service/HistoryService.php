@@ -49,7 +49,7 @@ class HistoryService
         }catch (\Exception $exception)
         {
            return [
-            'data' => 'Erreur serveur !',
+            'data' => $exception->getMessage(),
             'errorCode' => 500
             ];
         }

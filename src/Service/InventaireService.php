@@ -950,6 +950,7 @@ class InventaireService extends AbstractController
         } else if(!$data['espece'] && $data['codeSite'] && $data['critere'] && $data['isFinished']) {
             return FilterMapService::filtertreeRemarquable($inventory) && FilterMapService::filterCodeSiteOrNumSujet($data['codeSite'], $inventory) && FilterMapService::filterBrouillon($inventory);
         }
+        return false;
     }
 
     public function uploadInventoryFile($request)
