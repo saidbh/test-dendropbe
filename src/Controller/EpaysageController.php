@@ -123,6 +123,6 @@ class EpaysageController extends AbstractController
     public function getTotalWoodedSpace(): JsonResponse
     {
         $data = $this->service->getTotalWoodedSpace();
-        return new JsonResponse($data['data'], $data['errorCode']);
+        return new JsonResponse(['data' => $data['data'], 'code' => $data['errorCode']]);
     }
 }
