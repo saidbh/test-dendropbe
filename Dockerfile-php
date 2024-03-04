@@ -28,3 +28,5 @@ COPY ./ /var/www/dendromap
 WORKDIR /var/www/dendromap/
 
 RUN composer install --no-scripts
+
+RUN mkdir /var/www/dendromap/var && chmod -R 777 /var/www/dendromap/var
