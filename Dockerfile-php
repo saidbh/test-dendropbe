@@ -25,5 +25,8 @@ RUN docker-php-ext-install gd
 RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
 COPY ./ /var/www/dendromap
 
+RUN apt install composer
+
 WORKDIR /var/www/dendromap/
 
+RUN composer install --no-scripts
