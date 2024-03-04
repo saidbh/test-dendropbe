@@ -127,14 +127,19 @@ class InventaireController extends AbstractController
      * @SWG\Tag(name="Inventaire")
      * @return JsonResponse
      */
-    public function listInventorynotFinished(InventaireRepository $inventaireRepository,Request $request): JsonResponse
+    public function listInventoryNotFinished(InventaireRepository $inventaireRepository,Request $request): JsonResponse
     {
-        if ($request->get('page') && $request->get('limit')) {
-            $data = $this->service->getAllFinishedWithPagination($inventaireRepository, $request, false);
-            return new JsonResponse(['count' => $data['count'], 'data' => $data['data']], $data['statusCode']);
-        } else {
-        $data = $this->service->getAllFinished($request, false);
-        return new JsonResponse($data['data'], $data['statusCode']);
+        try {
+            if ($request->get('page') && $request->get('limit')) {
+                $data = $this->service->getAllFinishedWithPagination($inventaireRepository, $request, false);
+                return new JsonResponse(['count' => $data['count'], 'data' => $data['data']], $data['statusCode']);
+            } else {
+                $data = $this->service->getAllFinished($request, false);
+                return new JsonResponse($data['data'], $data['statusCode']);
+            }
+        }catch (\Exception $exception)
+        {
+            return new JsonResponse(['data' => $exception->getMessage(), 'statusCode' => 500]);
         }
     }
 
