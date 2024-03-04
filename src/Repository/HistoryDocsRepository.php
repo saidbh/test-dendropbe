@@ -4,12 +4,9 @@ namespace App\Repository;
 
 use App\Entity\HistoryDocs;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<HistoryDocs>
  *
  * @method HistoryDocs|null find($id, $lockMode = null, $lockVersion = null)
  * @method HistoryDocs|null findOneBy(array $criteria, array $orderBy = null)
@@ -21,30 +18,6 @@ class HistoryDocsRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, HistoryDocs::class);
-    }
-
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function add(HistoryDocs $entity, bool $flush = true): void
-    {
-        $this->_em->persist($entity);
-        if ($flush) {
-            $this->_em->flush();
-        }
-    }
-
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function remove(HistoryDocs $entity, bool $flush = true): void
-    {
-        $this->_em->remove($entity);
-        if ($flush) {
-            $this->_em->flush();
-        }
     }
 
     // /**
