@@ -537,7 +537,7 @@ class EpaysageService extends AbstractController
         }catch(\Exception $exception)
         {
             return [
-                "data" => "Une erreur est survenue ! Impossible de calculer l'espace boisee !",
+                "data" => $exception->getMessage(),
                 "errorCode" => 500
             ];
         }
