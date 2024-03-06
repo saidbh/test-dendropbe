@@ -108,7 +108,4 @@ class HistoryController extends AbstractController
         $data = $historyService->uploadHistoryDocs($request);
         return $this->json($data['data'], $data['errorCode']);
     }
-
-
-
 }

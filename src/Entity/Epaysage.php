@@ -13,6 +13,7 @@ use Swagger\Annotations as SWG;
  */
 class Epaysage
 {
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -59,9 +60,20 @@ class Epaysage
      */
     private $area;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updatedAt;
+
     public function __construct()
     {
         $this->essence = new ArrayCollection();
+        $this->createdAt = new \DateTime('now');
     }
 
     public function getId(): ?int
@@ -155,6 +167,23 @@ class Epaysage
     public function setArea(?float $area): self
     {
         $this->area = $area;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

@@ -129,7 +129,7 @@ class StripeController extends AbstractController
      */
     public function createCodePromos(Request $request, ValidatorInterface $validator): JsonResponse
     {
-        if (count($validator->validate(new CreateCodePromosValidator($request->request->all())))) {
+        if (count($validator->validate(new CreateCodePromosValidator(json_decode($request->getContent(),true))))) {
             return new JsonResponse([
                 'data' => [
                     'message' => 'error_params',

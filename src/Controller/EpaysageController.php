@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route("/api/epaysage")
@@ -112,17 +113,37 @@ class EpaysageController extends AbstractController
     }
 
     /**
-     * @Route("/total/wooded-space", name="get_total_wooded-space", methods="GET")
+     * wooded-space
+     * @Route("/total/wooded-space", name="get_total_wooded-space",methods={"GET"})
+     * @return JsonResponse
+     * @SWG\Parameter(
+     *     name="date",
+     *     in="query",
+     *     type="string",
+     *     description="date"
+     * )
+     * @SWG\Parameter(
+     *     name="dateDebut",
+     *     in="query",
+     *     type="string",
+     *     description="Date de debut"
+     * )
+     * @SWG\Parameter(
+     *     name="dateFin",
+     *     in="query",
+     *     type="string",
+     *     description="date de fin"
+     * )
      * @SWG\Response(
      *  response=200,
-     *     description="return an object of total wooded space HA",
+     *  description="return total wooded space",
      * )
-     * @SWG\Tag(name="WoodedSpace")
-     * @return JsonResponse
+     * @SWG\Tag(name="Epaysage")
      */
-    public function getTotalWoodedSpace(): JsonResponse
+
+    public function getTotalWoodedSpace(Request $request): JsonResponse
     {
-        $data = $this->service->getTotalWoodedSpace();
+        $data = $this->service->getTotalWoodedSpace($request);
         return new JsonResponse(['data' => $data['data'], 'code' => $data['errorCode']]);
     }
 }
