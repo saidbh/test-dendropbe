@@ -34,6 +34,7 @@ class EpaysageService extends AbstractController
     private $inventaireRepository;
     private $_essenceService;
     private $bus;
+    private $epaysageRepository;
 
     public function __construct(
         EpaysageRepository   $repository,
@@ -43,7 +44,8 @@ class EpaysageService extends AbstractController
         TokenService         $tokenService,
         ImageService         $imageService,
         InventaireRepository $inventaireRepository,
-        EssenceService       $essenceService
+        EssenceService       $essenceService,
+        EpaysageRepository       $epaysageRepository
     )
     {
         $this->repository = $repository;
@@ -54,6 +56,7 @@ class EpaysageService extends AbstractController
         $this->imageService = $imageService;
         $this->inventaireRepository = $inventaireRepository;
         $this->_essenceService = $essenceService;
+        $this->epaysageRepository = $epaysageRepository;
     }
 
     /**
@@ -468,19 +471,19 @@ class EpaysageService extends AbstractController
                 switch ($request->query->get('date'))
                 {
                     case "0":
-                        $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findBy(['createdAt' >= $todayDate]);
+                        $epaysage = $this->epaysageRepository->getTotalWoodedSpaceByTime($todayDate);
                         break;
                     case "1":
                         $todayDate->modify('-1 month');
-                        $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findBy(['createdAt' >= $todayDate]);
+                        $epaysage = $this->epaysageRepository->getTotalWoodedSpaceByTime($todayDate);
                         break;
                     case "2":
                         $todayDate->modify('-6 month');
-                        $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findBy(['createdAt' >= $todayDate]);
+                        $epaysage = $this->epaysageRepository->getTotalWoodedSpaceByTime($todayDate);
                         break;
                     case "3":
                         $todayDate->modify('-1 year');
-                        $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findBy(['createdAt' >= $todayDate]);
+                        $epaysage = $this->epaysageRepository->getTotalWoodedSpaceByTime($todayDate);
                         break;
                     default;
                         $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();

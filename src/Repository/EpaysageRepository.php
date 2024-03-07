@@ -19,6 +19,15 @@ class EpaysageRepository extends ServiceEntityRepository
         parent::__construct($registry, Epaysage::class);
     }
 
+    public function getTotalWoodedSpaceByTime($todayDate)
+    {
+        return $this->createQueryBuilder('e')
+                    ->where('e.createdAt >= :todayDate')
+                    ->setParameter('todayDate', $todayDate)
+                    ->getQuery()
+                    ->getResult();
+    }
+
     // /**
     //  * @return Epaysage[] Returns an array of Epaysage objects
     //  */
