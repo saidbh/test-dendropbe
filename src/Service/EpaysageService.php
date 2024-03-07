@@ -508,9 +508,9 @@ class EpaysageService extends AbstractController
                 }
                 foreach ($epaysage as $item)
                 {
-                    if(strtotime(str_replace('/','-',$dateDebut)) <= strtotime(str_replace('/','-',$item->getCreatedAt()))
+                    if(strtotime(str_replace('/','-',$dateDebut)) <= strtotime(str_replace('/','-',$item->getCreatedAt()->format('Y/m/d')))
                         &&
-                        strtotime(str_replace('/','-',$dateFin)) <= strtotime(str_replace('/','-',$item->getCreatedAt()))
+                        strtotime(str_replace('/','-',$dateFin)) <= strtotime(str_replace('/','-',$item->getCreatedAt()->format('Y/m/d')))
                     )
                     {
                         array_push($area,$item->getArea());
