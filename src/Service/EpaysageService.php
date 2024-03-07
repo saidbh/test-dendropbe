@@ -486,8 +486,10 @@ class EpaysageService extends AbstractController
                         $epaysage = $this->epaysageRepository->getTotalWoodedSpaceByTime($todayDate);
                         break;
                     default;
-                        $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();
-                        break;
+                        return [
+                            "data" => 'Erreur de paramas !',
+                            "errorCode" => 201
+                        ];
 
                 }
 
@@ -497,6 +499,13 @@ class EpaysageService extends AbstractController
             )
             {
                 $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();
+                if (count($epaysage) == 0)
+                {
+                    return [
+                        "data" => 0,
+                        "errorCode" => 200
+                    ];
+                }
                 foreach ($epaysage as $item)
                 {
                     if(strtotime(str_replace('/','-',$dateDebut)) <= strtotime(str_replace('/','-',$item->getCreatedAt()))
@@ -511,17 +520,17 @@ class EpaysageService extends AbstractController
             }else
             {
                 $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();
-            }
-            foreach ($epaysage as $item)
-            {
-                array_push($area,$item->getArea());
-            }
-            if (count($epaysage) == 0)
-            {
-                return [
-                    "data" => 0,
-                    "errorCode" => 200
-                ];
+                if (count($epaysage) == 0)
+                {
+                    return [
+                        "data" => 0,
+                        "errorCode" => 200
+                    ];
+                }
+                foreach ($epaysage as $item)
+                {
+                    array_push($area,$item->getArea());
+                }
             }
 
             $squareMeters = array_sum($area);
