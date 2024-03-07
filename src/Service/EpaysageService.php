@@ -492,6 +492,14 @@ class EpaysageService extends AbstractController
                         ];
 
                 }
+                if (count($epaysage) == 0)
+                {
+                    return [
+                        "data" => 0,
+                        "errorCode" => 200
+                    ];
+                }
+                $squareMeters = array_sum($area);
 
             }elseif(
                  $request->query->has('dateDebut') && $request->query->get('dateDebut') != null &&
@@ -510,7 +518,7 @@ class EpaysageService extends AbstractController
                 }
                 foreach ($epaysage as $item)
                 {
-                    $createdAt = strtotime(str_replace('/', '-', $item->getCreatedAt()->format('YYYY/MM/DD')));
+                    $createdAt = strtotime(str_replace('/', '-', $item->getCreatedAt()->format('YYYY-MM-DD')));
                     $startTimestamp = strtotime(str_replace('/', '-', $dateDebut));
                     $endTimestamp = strtotime(str_replace('/', '-', $dateFin));
 
@@ -519,6 +527,7 @@ class EpaysageService extends AbstractController
                         array_push($area, $item->getArea());
                     }
                 }
+                $squareMeters = array_sum($area);
 
             }else
             {
@@ -534,9 +543,9 @@ class EpaysageService extends AbstractController
                 {
                     array_push($area,$item->getArea());
                 }
+                $squareMeters = array_sum($area);
             }
 
-            $squareMeters = array_sum($area);
             return [
                 "data" => $this->squareMetersToHectares($squareMeters),
                 "errorCode" => 200
