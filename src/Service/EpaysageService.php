@@ -461,14 +461,13 @@ class EpaysageService extends AbstractController
         try {
 
             $area = array();
-            if ($date = $request->query->has('date') || $request->query->get('date') !== null)
+            if ($request->query->has('date') && $request->query->get('date') != null)
             {
                 $todayDate = new \DateTime('now');
                 $todayDate->setTime(0, 0, 0);
-                switch ($date)
+                switch ($request->query->get('date'))
                 {
                     case "0":
-                        $todayDate->setTime(0, 0, 0);
                         $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findBy(['createdAt' >= $todayDate]);
                         break;
                     case "1":
@@ -489,14 +488,9 @@ class EpaysageService extends AbstractController
 
                 }
 
-                foreach ($epaysage as $item)
-                {
-                    array_push($area,$item->getArea());
-                }
-
             }elseif(
-                $dateDebut = $request->query->has('dateDebut') && $request->query->get('dateDebut') !== null &&
-                $dateFin = $request->query->has('dateFin') && $request->query->get('dateFin') !== null
+                $dateDebut = $request->query->has('dateDebut') && $request->query->get('dateDebut') != null &&
+                $dateFin = $request->query->has('dateFin') && $request->query->get('dateFin') != null
             )
             {
                 $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();
@@ -514,12 +508,11 @@ class EpaysageService extends AbstractController
             }else
             {
                 $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();
-                foreach ($epaysage as $item)
-                {
-                    array_push($area,$item->getArea());
-                }
             }
-            $area = array();
+            foreach ($epaysage as $item)
+            {
+                array_push($area,$item->getArea());
+            }
             if (count($epaysage) == 0)
             {
                 return [
