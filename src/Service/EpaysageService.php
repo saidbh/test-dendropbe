@@ -494,10 +494,12 @@ class EpaysageService extends AbstractController
                 }
 
             }elseif(
-                $dateDebut = $request->query->has('dateDebut') && $request->query->get('dateDebut') != null &&
-                $dateFin = $request->query->has('dateFin') && $request->query->get('dateFin') != null
+                 $request->query->has('dateDebut') && $request->query->get('dateDebut') != null &&
+                 $request->query->has('dateFin') && $request->query->get('dateFin') != null
             )
             {
+                $dateDebut = $request->query->get('dateDebut');
+                $dateFin = $request->query->get('dateFin');
                 $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();
                 if (count($epaysage) == 0)
                 {
