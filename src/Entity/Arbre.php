@@ -547,7 +547,13 @@ class Arbre
 
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
-        $this->createdAt = $createdAt;
+        if(!$createdAt)
+        {
+            $this->createdAt = new \DateTime();
+        }else
+        {
+            $this->createdAt = $createdAt;
+        }
         return $this;
     }
 

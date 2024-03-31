@@ -980,82 +980,98 @@ class InventaireService extends AbstractController
             unset($sheetData[0]);
             if (count($sheetData)>=1)
             {
+                $entityManager = $this->getDoctrine()->getManager();
                 foreach ($sheetData as $sheet)
                 {
-                    $arbre = new Arbre();
-                    $espece = $this->getDoctrine()->getManager()->getRepository(Espece::class)->findOneBy([
-                        "userAdded"=> $user,
-                        "genre" => $sheet[3],
-                        "cultivar" => $sheet[4],
-                        "nomFr" => $sheet[5]
+                    try
+                    {
+                        $arbre = new Arbre();
+                        $entityManager->beginTransaction();
+                        $espece = $this->getDoctrine()->getManager()->getRepository(Espece::class)->findOneBy([
+                            "userAdded"=> $user,
+                            "genre" => $sheet[3],
+                            "cultivar" => $sheet[4],
+                            "nomFr" => $sheet[5]
                         ]);
-                    $point = new Point($sheet[20], $sheet[21]);
-                    if (!$point instanceof Point) {
+                        $point = new Point($sheet[20], $sheet[21]);
+                        if (!$point instanceof Point) {
+                            return [
+                                'data' => ['message' => 'Coordonnées géographiques ne sont pas bonnes'],
+                                'statusCode' => Response::HTTP_BAD_REQUEST
+                            ];
+                        }
+                        if(!$espece)
+                        {
+                            $espece = new Espece();
+                            $espece->setUserAdded($user);
+                            $espece->setName($sheet[5]);
+                            $espece->setGenre($sheet[3]);
+                            $espece->setCultivar($sheet[4]);
+                            $espece->setNomFr($sheet[5]);
+                            $espece->setTarif($sheet[8]);
+                            $this->getDoctrine()->getManager()->persist($espece);
+                            $this->getDoctrine()->getManager()->flush();
+                        }
+                        $arbre->setEspece($espece);
+                        $arbre->setNumSujet($sheet[9]);
+                        //$arbre->set???($sheet[7]);
+                        $arbre->setCodeSite($sheet[10]);
+                        $arbre->setHauteur($sheet[11]);
+                        $arbre->setDiametre($sheet[12]);
+                        $arbre->setAddress($sheet[13]);
+                        $arbre->setVille($sheet[14]);
+                        $arbre->setPays($sheet[17]);
+                        $arbre->setCoord($point);
+                        //$arbre->set??($sheet[22]));
+                        $arbre->setCaractPiedOther($sheet[22]);
+                        $arbre->setCaractTronc($sheet[23]);
+                        $arbre->setPortArbre($sheet[24]);
+                        $arbre->setStadeDev($sheet[25]);
+                        $arbre->setCritere([$sheet[26]]);
+                        $arbre->setEtatSanCollet([$sheet[27]]);
+                        $arbre->setEtatSanTronc([$sheet[28]]);
+                        $arbre->setEtatSanHouppier([$sheet[29]]);
+                        $arbre->setEtatSanGeneral([$sheet[30]]);
+                        //$arbre->set????($sheet[31]"Examen general");
+                        $arbre->setRisque(["collet"=> $sheet[32],"tronc"=> $sheet[33] ,"houppier"=> $sheet[34]]);
+                        $arbre->setRisqueGeneral([$sheet[35]]);
+                        $arbre->setImplantation($sheet[36]);
+                        $arbre->setDomaine($sheet[37]);
+                        $arbre->setProximiteOther($sheet[38]);
+                        $arbre->setDict($sheet[39]);
+                        $arbre->setNuisance([$sheet[40]]);
+                        $arbre->setTauxFreq($sheet[41]);
+                        $arbre->setTypePassage([$sheet[42]]);
+                        $arbre->setAccessibilite($sheet[43]);
+                        $arbre->setTravauxCollet($sheet[44]);
+                        $arbre->setTravauxTronc($sheet[45]);
+                        $arbre->setTravauxHouppier($sheet[46]);
+                        $arbre->setUserEditedDateTravaux(new \DateTime($sheet[47]));
+                        $arbre->setCreatedAt(new \DateTime("now"));
+
+                        $this->getDoctrine()->getManager()->persist($arbre);
+
+                        $intervention = new Inventaire();
+                        $intervention->setUser($user);
+                        $intervention->setArbre($arbre);
+                        //$intervention->setEpaysage($epaysage);
+                        $intervention->setType("Arbre");
+                        $intervention->setIsFinished(true);
+                        $intervention->setCreatedAt(new \DateTime($sheet[1]));
+                        $intervention->setUpdatedAt(new \DateTime($sheet[19]));
+                        $this->getDoctrine()->getManager()->persist($intervention);
+
+                        $entityManager->flush();
+                        $entityManager->commit();
+                    }catch(\Exception $exception)
+                    {
+                        $entityManager->rollback();
                         return [
-                            'data' => ['message' => 'Coordonnées géographiques ne sont pas bonnes'],
-                            'statusCode' => Response::HTTP_BAD_REQUEST
+                            "message" => $exception->getMessage(),
+                            "errorCode" => 500
                         ];
                     }
-                    if(!$espece)
-                    {
-                        $espece = new Espece();
-                        $espece->setUserAdded($user);
-                        $espece->setName($sheet[5]);
-                        $espece->setGenre($sheet[3]);
-                        $espece->setCultivar($sheet[4]);
-                        $espece->setNomFr($sheet[5]);
-                        $espece->setTarif($sheet[8]);
-                        $this->getDoctrine()->getManager()->persist($espece);
-                        $this->getDoctrine()->getManager()->flush();
-                    }
-                    $arbre->setEspece($espece);
-                    $arbre->setNumSujet($sheet[9]);
-                    //$arbre->set???($sheet[7]);
-                    $arbre->setCodeSite($sheet[10]);
-                    $arbre->setHauteur($sheet[11]);
-                    $arbre->setDiametre($sheet[12]);
-                    $arbre->setAddress($sheet[13]);
-                    $arbre->setVille($sheet[14]);
-                    $arbre->setPays($sheet[17]);
-                    $arbre->setCoord($point);
-                    //$arbre->set??($sheet[22]));
-                    $arbre->setCaractPiedOther($sheet[22]);
-                    $arbre->setCaractTronc($sheet[23]);
-                    $arbre->setPortArbre($sheet[24]);
-                    $arbre->setStadeDev($sheet[25]);
-                    $arbre->setCritere($sheet[26]);
-                    $arbre->setEtatSanCollet([$sheet[27]]);
-                    $arbre->setEtatSanTronc([$sheet[28]]);
-                    $arbre->setEtatSanHouppier([$sheet[29]]);
-                    $arbre->setEtatSanGeneral([$sheet[30]]);
-                    //$arbre->set????($sheet[31]"Examen general");
-                    $arbre->setRisque(["collet"=> $sheet[32],"tronc"=> $sheet[33] ,"houppier"=> $sheet[34]]);
-                    $arbre->setRisqueGeneral([$sheet[35]]);
-                    $arbre->setImplantation($sheet[36]);
-                    $arbre->setDomaine($sheet[37]);
-                    $arbre->setProximiteOther($sheet[38]);
-                    $arbre->setDict($sheet[39]);
-                    $arbre->setNuisance([$sheet[40]]);
-                    $arbre->setTauxFreq($sheet[41]);
-                    $arbre->setTypePassage([$sheet[42]]);
-                    $arbre->setAccessibilite($sheet[43]);
-                    $arbre->setTravauxCollet($sheet[44]);
-                    $arbre->setTravauxTronc($sheet[45]);
-                    $arbre->setTravauxHouppier($sheet[46]);
-                    $arbre->setUserEditedDateTravaux(new \DateTime($sheet[47]));
 
-                    $this->getDoctrine()->getManager()->persist($arbre);
-                    $this->getDoctrine()->getManager()->flush();
-
-                    $intervention = new Inventaire();
-                    $intervention->setUser($user);
-                    $intervention->setArbre($arbre);
-                    //$intervention->setEpaysage($epaysage);
-                    $intervention->setIsFinished(true);
-                    $intervention->setCreatedAt(new \DateTime($sheet[1]));
-                    $intervention->setUpdatedAt(new \DateTime($sheet[19]));
-                    $this->getDoctrine()->getManager()->persist($intervention);
-                    $this->getDoctrine()->getManager()->flush();
                 }
                 return [
                     "message" => "Fichier traiter avec succee !",
@@ -1072,7 +1088,7 @@ class InventaireService extends AbstractController
         }catch(\Exception $exception)
         {
             return [
-                "message" => "Erreur de traitement de fichier !",
+                "message" => $exception->getMessage(),
                 "errorCode" => 500
             ];
         }

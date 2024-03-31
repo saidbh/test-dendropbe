@@ -229,18 +229,32 @@ class StripeService extends AbstractController
 
     public function getCustomersByCoupon($id)
     {
-        $url = getenv('BASE_URL_STRIPE') . '/v1/customers?coupon' . $id;
-        $customers = self::configureHttpClientguzzle($url);
-        $response = [];
-        foreach ($customers->data as $customer) {
-            $cus = new \stdClass();
-            $cus->name = $customer->name;
-            $cus->email = $customer->email;
-            $cus->addDate = date('d-m-Y H:i', $customer->created);
-            $response[] = $cus;
-        }
+        try
+        {
+            try
+            {
+                Stripe::setApiKey($this->parameterBag->get('STRIPE_SECRET_KEY'));
+                $customers = \Stripe\Customer::retrieve($id);
+            }catch(\Exception $exception)
+            {
+                return [
+                    'Code' => 201,
+                    'Message' => $exception->getMessage()
+                ];
+            }
+            return  [
+                'name' => $customers['name'],
+                'email' => $customers['email'],
+                'addDate' => date('d-m-Y H:i', $customers['created'])
+            ];
 
-        return $response;
+        }catch(\Exception $exception)
+        {
+            return [
+                'Code' => 500,
+                'Message' => $exception->getMessage()
+            ];
+        }
     }
 
     /**
