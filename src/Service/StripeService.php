@@ -423,7 +423,7 @@ class StripeService extends AbstractController
     public function createPromotionCode($request):array
     {
         try {
-            $inputs = $request->request->all();
+            $inputs = json_decode($request->getContent(),true);
             if ($this->getDoctrine()->getRepository(Promotions::class)->findOneBy(['promotionCode' => $inputs['promotionCode']]))
             {
                 return [
@@ -434,7 +434,6 @@ class StripeService extends AbstractController
                 ];
             }
             Stripe::setApiKey($this->parameterBag->get('STRIPE_SECRET_KEY'));
-            // Create a new promotion code using the Stripe API
             $promotionCode = \Stripe\Coupon::create([
                 'percent_off' => (int)$inputs['value'],
                 'duration' => 'once',
