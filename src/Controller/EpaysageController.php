@@ -117,12 +117,6 @@ class EpaysageController extends AbstractController
      * @Route("/total/wooded-space", name="get_total_wooded-space",methods={"GET"})
      * @return JsonResponse
      * @SWG\Parameter(
-     *     name="date",
-     *     in="query",
-     *     type="string",
-     *     description="date"
-     * )
-     * @SWG\Parameter(
      *     name="dateDebut",
      *     in="query",
      *     type="string",

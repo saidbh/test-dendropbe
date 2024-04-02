@@ -28,6 +28,25 @@ class EpaysageRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
+    public function findByDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    {
+        $qb = $this->createQueryBuilder('e');
+        $qb->select('SUM(e.area) AS area')
+            ->where($qb->expr()->between('e.createdAt', ':startDate', ':endDate'))
+            ->orWhere($qb->expr()->between('e.updatedAt', ':startDate', ':endDate'))
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate);
+
+        return $qb->getQuery()->getResult();
+    }
+    public function findSumWoodedSpace()
+    {
+        return $this->createQueryBuilder('e')
+                    ->select('SUM(e.area) AS area')
+                    ->getQuery()->getResult();
+    }
+
+
     // /**
     //  * @return Epaysage[] Returns an array of Epaysage objects
     //  */

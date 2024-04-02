@@ -15,6 +15,7 @@ use App\Repository\InventaireRepository;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
+use DateTime;
 use Location\Coordinate;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\Serializer;
 use Location\Polygon as PolygonArea;
+
 // SERVICE
 class EpaysageService extends AbstractController
 {
@@ -464,86 +466,20 @@ class EpaysageService extends AbstractController
         try {
 
             $area = array();
-            if ($request->query->has('date') && $request->query->get('date') != null)
-            {
-                $todayDate = new \DateTime('now');
-                $todayDate->setTime(0, 0, 0);
-                switch ($request->query->get('date'))
-                {
-                    case "0":
-                        $epaysage = $this->epaysageRepository->getTotalWoodedSpaceByTime($todayDate);
-                        break;
-                    case "1":
-                        $todayDate->modify('-1 month');
-                        $epaysage = $this->epaysageRepository->getTotalWoodedSpaceByTime($todayDate);
-                        break;
-                    case "2":
-                        $todayDate->modify('-6 month');
-                        $epaysage = $this->epaysageRepository->getTotalWoodedSpaceByTime($todayDate);
-                        break;
-                    case "3":
-                        $todayDate->modify('-1 year');
-                        $epaysage = $this->epaysageRepository->getTotalWoodedSpaceByTime($todayDate);
-                        break;
-                    default;
-                        return [
-                            "data" => 'Erreur de paramas !',
-                            "errorCode" => 201
-                        ];
-
-                }
-                if (count($epaysage) == 0)
-                {
-                    return [
-                        "data" => 0,
-                        "errorCode" => 200
-                    ];
-                }
-                $squareMeters = array_sum($area);
-
-            }elseif(
+            if(
                  $request->query->has('dateDebut') && $request->query->get('dateDebut') != null &&
                  $request->query->has('dateFin') && $request->query->get('dateFin') != null
             )
             {
-                $dateDebut = $request->query->get('dateDebut');
-                $dateFin = $request->query->get('dateFin');
-                $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();
-                if (count($epaysage) == 0)
-                {
-                    return [
-                        "data" => 0,
-                        "errorCode" => 200
-                    ];
-                }
-                foreach ($epaysage as $item)
-                {
-                    $createdAt = strtotime(str_replace('/', '-', $item->getCreatedAt()->format('YYYY-MM-DD')));
-                    $startTimestamp = strtotime(str_replace('/', '-', $dateDebut));
-                    $endTimestamp = strtotime(str_replace('/', '-', $dateFin));
-
-                    if ($createdAt >= $startTimestamp && $createdAt <= $endTimestamp)
-                    {
-                        array_push($area, $item->getArea());
-                    }
-                }
-                $squareMeters = array_sum($area);
+                $dateDebut = DateTime::createFromFormat('Y/m/d', $request->query->get('dateDebut'))->modify('-1 day');
+                $dateFin = DateTime::createFromFormat('Y/m/d', $request->query->get('dateFin'));
+                $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findByDateRange($dateDebut,$dateFin);
+                $squareMeters = isset($epaysage[0])?$epaysage[0]['area']:0;
 
             }else
             {
-                $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findAll();
-                if (count($epaysage) == 0)
-                {
-                    return [
-                        "data" => 0,
-                        "errorCode" => 200
-                    ];
-                }
-                foreach ($epaysage as $item)
-                {
-                    array_push($area,$item->getArea());
-                }
-                $squareMeters = array_sum($area);
+                $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findSumWoodedSpace();
+                $squareMeters = isset($epaysage[0])?$epaysage[0]['area']:0;;
             }
 
             return [
