@@ -16,6 +16,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use DateTime;
+use DateTimeInterface;
 use Location\Coordinate;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -464,22 +465,27 @@ class EpaysageService extends AbstractController
     public function getTotalWoodedSpace($request)
     {
         try {
-
-            $area = array();
             if(
                  $request->query->has('dateDebut') && $request->query->get('dateDebut') != null &&
                  $request->query->has('dateFin') && $request->query->get('dateFin') != null
             )
             {
-                $dateDebut = DateTime::createFromFormat('Y/m/d', $request->query->get('dateDebut'))->modify('-1 day');
+                $dateDebut = DateTime::createFromFormat('Y/m/d', $request->query->get('dateDebut'));
                 $dateFin = DateTime::createFromFormat('Y/m/d', $request->query->get('dateFin'));
-                $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findByDateRange($dateDebut,$dateFin);
-                $squareMeters = isset($epaysage[0])?$epaysage[0]['area']:0;
+                if ($dateDebut && $dateFin instanceof DateTimeInterface)
+                {
 
+                    $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findByDateRange($dateDebut->modify('-1 day'),$dateFin);
+                    $squareMeters = isset($epaysage[0])?$epaysage[0]['area']:0;
+                }else
+                {
+                    $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findSumWoodedSpace();
+                    $squareMeters = isset($epaysage[0])?$epaysage[0]['area']:0;
+                }
             }else
             {
                 $epaysage = $this->getDoctrine()->getRepository(Epaysage::class)->findSumWoodedSpace();
-                $squareMeters = isset($epaysage[0])?$epaysage[0]['area']:0;;
+                $squareMeters = isset($epaysage[0])?$epaysage[0]['area']:0;
             }
 
             return [
