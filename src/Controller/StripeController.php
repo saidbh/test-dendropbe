@@ -39,19 +39,6 @@ class StripeController extends AbstractController
     }
 
     /**
-     * @Route("/coupons/customers/{id}", methods={"GET"})
-     * @SWG\Response(
-     *  response=200,
-     *     description="return list of cutomers by coupon",
-     * )
-     * @SWG\Tag(name="Coupon")
-     */
-    public function cutomsersByCoupon($id)
-    {
-        return new JsonResponse($this->stripeService->getCustomersByCoupon($id));
-    }
-
-    /**
      * Get promo code
      * @Route("/codepromos", methods={"POST"})
      * @param Request $request
@@ -139,5 +126,18 @@ class StripeController extends AbstractController
         }
         $response = $this->stripeService->createPromotionCode($request);
         return new JsonResponse($response);
+    }
+
+    /**
+     * @Route("/coupons/customers/{id}", methods={"GET"})
+     * @SWG\Response(
+     *  response=200,
+     *     description="return list of cutomers by coupon",
+     * )
+     * @SWG\Tag(name="Coupon")
+     */
+    public function cutomsersByCoupon($id)
+    {
+        return new JsonResponse($this->stripeService->getCustomersByCoupon($id));
     }
 }
