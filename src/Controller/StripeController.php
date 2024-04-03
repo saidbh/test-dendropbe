@@ -129,7 +129,7 @@ class StripeController extends AbstractController
     }
 
     /**
-     * @Route("/coupons/customers/{id}", methods={"GET"})
+     * @Route("/coupons/customer/{id}", methods={"GET"})
      * @SWG\Response(
      *  response=200,
      *     description="return list of cutomers by coupon",
@@ -138,6 +138,7 @@ class StripeController extends AbstractController
      */
     public function cutomsersByCoupon($id)
     {
-        return new JsonResponse($this->stripeService->getCustomersByCoupon($id));
+        $response = $this->stripeService->getCustomersByCoupon($id);
+        return new JsonResponse($response);
     }
 }
