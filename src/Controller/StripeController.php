@@ -129,7 +129,7 @@ class StripeController extends AbstractController
     }
 
     /**
-     * @Route("/coupons/customer/{id}", methods={"GET"})
+     * @Route("/coupons/customers/{id}", methods={"GET"})
      * @SWG\Response(
      *  response=200,
      *     description="return list of cutomers by coupon",
