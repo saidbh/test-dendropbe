@@ -39,30 +39,16 @@ class StripeController extends AbstractController
     }
 
     /**
-     * @Route("/coupons/customers", methods={"GET"})
-     * @SWG\Parameter(
-     *     name="id",
-     *     in="query",
-     *     type="string",
-     *     description="Coupon ID",
-     *     required=true,
-     * )
+     * @Route("/coupons/customers/{id}", methods={"GET"})
      * @SWG\Response(
-     *     response=200,
-     *     description="Return list of customers by coupon",
+     *  response=200,
+     *     description="return list of cutomers by coupon",
      * )
      * @SWG\Tag(name="Coupon")
      */
-    public function cutomsersByCoupon(Request $request)
+    public function cutomsersByCoupon($id)
     {
-        if ($request->query->has('id') && $request->query->get('id') != null)
-        {
-            return new JsonResponse($this->stripeService->getCustomersByCoupon($request->query->get('id')));
-        }
-        return new JsonResponse([
-           'data' => 'Erreur Params !',
-           'Code' => 401
-        ]);
+        return new JsonResponse($this->stripeService->getCustomersByCoupon($id));
     }
 
     /**
