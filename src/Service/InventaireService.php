@@ -56,7 +56,7 @@ class InventaireService extends AbstractController
         UserRepository     $userRepository,
         HistoryService     $historyService,
         HistoryRepository  $historyRepository,
-        Serializer         $serializer
+        SerializerInterface         $serializer
     )
     {
         $this->tokenService = $tokenService;
