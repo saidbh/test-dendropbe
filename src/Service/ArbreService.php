@@ -594,7 +594,6 @@ class ArbreService extends AbstractController
         $_arbre['etatSanTroncChampignonsAutres'] = $object->getArbre()->getEtatSanTroncChampignonsAutres();
         $_arbre['etatSanHouppierChampignonsAutres'] = $object->getArbre()->getEtatSanHouppierChampignonsAutres();
 
-        $_arbre['workHistory'] = $this->serializer->serialize($this->historyRepository->findBy(['inventaire' => $object->getId()], ['createdAt' => 'DESC'], 3, 0), 'json', ['groups' => 'historyList']);
         return $_arbre;
     }
 

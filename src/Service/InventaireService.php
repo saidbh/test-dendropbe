@@ -9,6 +9,7 @@ use App\Entity\Essence;
 use App\Entity\Inventaire;
 use App\Entity\User;
 use App\Form\InventaireType;
+use App\Repository\HistoryRepository;
 use App\Repository\InventaireRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -20,6 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 
@@ -37,6 +39,9 @@ class InventaireService extends AbstractController
 
     private $historyService;
 
+    private $historyRepository;
+    private $serializer;
+
     const TYPE_TREE = ['ARBRE', 'ALIGNEMENT'];
 
     public function __construct(
@@ -49,7 +54,9 @@ class InventaireService extends AbstractController
         EssenceService     $essenceService,
         TravauxService     $travauxService,
         UserRepository     $userRepository,
-        HistoryService     $historyService
+        HistoryService     $historyService,
+        HistoryRepository  $historyRepository,
+        Serializer         $serializer
     )
     {
         $this->tokenService = $tokenService;
@@ -62,6 +69,8 @@ class InventaireService extends AbstractController
         $this->_travauxService = $travauxService;
         $this->_userRepository = $userRepository;
         $this->historyService = $historyService;
+        $this->historyRepository = $historyRepository;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -615,6 +624,7 @@ class InventaireService extends AbstractController
         if ($object->getArbre()) {
             $_object['arbre'] = $this->_arbreService->generateObjectArbreJson($object);
         }
+        $_object['workHistory'] = $this->serializer->serialize($this->historyRepository->findBy(['inventaire' => $object->getId()], ['createdAt' => 'DESC'], 3, 0), 'json', ['groups' => 'historyList']);
         // EPAYSAGE
         $_object['epaysage'] = $object->getEpaysage() ? $this->serializerEpaysage($object->getEpaysage()) : null;
         //
