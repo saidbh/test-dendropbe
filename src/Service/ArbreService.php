@@ -7,11 +7,13 @@ use App\Entity\Espece;
 use App\Entity\Inventaire;
 use App\Entity\Nuisible;
 use App\Form\ArbreType;
+use App\Repository\HistoryRepository;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 
 class ArbreService extends AbstractController
@@ -19,16 +21,22 @@ class ArbreService extends AbstractController
     private $_tokenService;
     private $_mapService;
     private $_champignonService;
+    private $historyRepository;
+    private $serializer;
 
     public function __construct(
         TokenService      $tokenService,
         MapService        $mapService,
-        ChampignonService $champignonService
+        ChampignonService $champignonService,
+        HistoryRepository $historyRepository,
+        SerializerInterface $serializer
     )
     {
         $this->_tokenService = $tokenService;
         $this->_mapService = $mapService;
         $this->_champignonService = $champignonService;
+        $this->historyRepository = $historyRepository;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -586,6 +594,7 @@ class ArbreService extends AbstractController
         $_arbre['etatSanTroncChampignonsAutres'] = $object->getArbre()->getEtatSanTroncChampignonsAutres();
         $_arbre['etatSanHouppierChampignonsAutres'] = $object->getArbre()->getEtatSanHouppierChampignonsAutres();
 
+        $_arbre['workHistory'] = $this->serializer->serialize($this->historyRepository->findBy(['inventaire' => $object->getId()], ['createdAt' => 'DESC'], 3, 0), 'json', ['groups' => 'historyList']);
         return $_arbre;
     }
 

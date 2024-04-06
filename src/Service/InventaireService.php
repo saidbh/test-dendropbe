@@ -147,9 +147,6 @@ class InventaireService extends AbstractController
         // Get Data Params
         $page = $request->get('page');
         $limit = $request->get('limit');
-        /** @var Serializer $serializer */
-        $serializer = $this->get('serializer');
-        $data = $serializer->decode($request->getContent(), 'json');
         /** @var Inventaire[] $inventory */
         $inventory = $this->generateArrayInventaire($inventaireRepository->queryInventoryByGroupeIsFinishedPagination($page, $limit,$user, $finished ? 1 : 0));
             return [

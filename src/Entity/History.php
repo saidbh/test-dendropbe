@@ -112,37 +112,43 @@ class History
     // PREND DEUX VALEURS SIMPLE ET ENUM
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"historyList"})
      */
     private $abattage;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"historyList"})
      */
     private $travauxCollet;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"read"})
+     * @Groups({"historyList"})
      */
     private $travauxTronc;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"historyList"})
      */
     private $travauxHouppier;
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Groups({"historyList"})
      */
     private $dateTravaux;
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Groups({"historyList"})
      */
     private $dateProVisite;
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
+     * @Groups({"historyList"})
      */
     private $comProVisite;
 
@@ -197,6 +203,7 @@ class History
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true, nullable=true)
+     * @Groups({"historyList"})
      */
     private $address;
 
@@ -219,7 +226,6 @@ class History
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
-     * @Groups({"read"})
      */
     private $proximiteOther;
 
@@ -236,6 +242,7 @@ class History
     /**
      * @ORM\Column(type="integer", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
+     * @Groups({"historyList"})
      */
     private $caractTroncMultiples;
 
@@ -299,16 +306,19 @@ class History
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
+     * @Groups({"historyList"})
      */
     private $critereOther;
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
+     * @Groups({"historyList"})
      */
     private $risqueGeneralOther;
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
+     * @Groups({"historyList"})
      */
     private $typePassageOther;
 
@@ -330,16 +340,19 @@ class History
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
+     * @Groups({"historyList"})
      */
     private $travauxTroncOther;
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
+     * @Groups({"historyList"})
      */
     private $travauxColletOther;
 
     /**
      * @ORM\Column(type="string", length=2000, nullable=true)
+     * @Groups({"historyList"})
      */
     private $travauxHouppierOther;
 
@@ -351,16 +364,19 @@ class History
 
     /**
      * @ORM\Column(type="string", length=155, nullable=true)
+     * @Groups({"historyList"})
      */
     private $ville;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"historyList"})
      */
     private $pays;
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
+     * @Groups({"historyList"})
      */
     private $travauxTroncProtection;
 
@@ -382,34 +398,40 @@ class History
 
     /**
      * @ORM\Column(type="string", length=150, nullable=true)
+     * @Groups({"historyList"})
      */
     private $etatSanTroncNuisiblesAutres;
 
     /**
      * @ORM\Column(type="string", length=150, nullable=true)
+     * @Groups({"historyList"})
      */
     private $etatSanHouppierNuisiblesAutres;
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
+     * @Groups({"historyList"})
      */
     private $travauxColletMultiple = [];
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
+     * @Groups({"historyList"})
      */
     private $travauxTroncMultiple = [];
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
+     * @Groups({"historyList"})
      */
     private $travauxHouppierMultiple = [];
 
     /**
      * @ORM\Column(type="boolean", options={"default":true}, nullable=true)
+     * @Groups({"historyList"})
      */
     private $statusTravaux;
 
