@@ -100,11 +100,13 @@ class InventaireController extends AbstractController
     {
         if ($request->get('page') && $request->get('limit')) {
             $data = $this->service->getAllFinishedWithPagination($inventaireRepository, $request, true);
-            return new JsonResponse(['count' => isset($data['count'])?$data['count']: 0, 'data' => $data['data']], $data['statusCode']);
+            $response = new JsonResponse(['count' => isset($data['count'])?$data['count']: 0, 'data' => $data['data']], $data['statusCode']);
         } else {
         $data = $this->service->getAllFinished($request, true);
-            return new JsonResponse($data["data"], $data['statusCode']);
+            $response = new JsonResponse($data["data"], $data['statusCode']);
         }
+        $response->headers->set('Content-Type', 'application/json; charset=utf-8');
+        return $response;
     }
 
     /**
