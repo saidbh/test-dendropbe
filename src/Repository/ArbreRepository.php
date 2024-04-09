@@ -47,4 +47,12 @@ class ArbreRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function getNotProxyArbre($arbre)
+    {
+        return $this->createQueryBuilder('a')
+                    ->where('a.id = :id')
+                    ->setParameter('id', $arbre->getId())
+                    ->getQuery()
+                    ->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+    }
 }

@@ -63,12 +63,24 @@ class HistoryService
 
             if ($inventaire->getArbre())
             {
-            $history = $this->serializer->deserialize(json_encode($arbre, true), History::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $history]);
-            $history->setInventaire($inventaire);
-            $this->entityManager->persist($history);
+            $arbreArray = $this->entityManager->getRepository(Arbre::class)->getNotProxyArbre($arbre);
+            $oldhistory = new History();
+                foreach ($arbreArray as $propertyName => $propertyValue) {
+                    if (property_exists(History::class, $propertyName)) {
+                        $setterMethod = 'set' . ucfirst($propertyName);
+                        if (method_exists($oldhistory, $setterMethod)) {
+                            if ($propertyValue != null && $propertyValue != 'null') {
+                                $oldhistory->$setterMethod($propertyValue);
+                            }
+                        }
+                    }
+                }
+            $oldhistory->setCreatedAt(new \DateTime('now'));
+            $oldhistory->setEspece($arbre->getEspece());
+            $oldhistory->setInventaire($inventaire);
+            $this->entityManager->persist($oldhistory);
             $this->entityManager->flush();
             }
-
             return [
                 'data' => 'History added sucessfully !',
                 'errorCode' => 200
@@ -169,6 +181,13 @@ class HistoryService
             ];
         }
 
+    }
+
+    public function getPropertyType(string $className, string $propertyName): ?string {
+        $reflection = new ReflectionClass($className);
+        $property = $reflection->getProperty($propertyName);
+        $type = $property->getType();
+        return $type ? $type->getName() : null;
     }
 
 }

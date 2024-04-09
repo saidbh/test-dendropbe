@@ -562,7 +562,7 @@ class InventaireService extends AbstractController
                     "data" => $this->generateObjectInventaire($inventaire)
                 ], 'statusCode' => Response::HTTP_OK
             ];
-        } catch (\Doctrine\DBAL\DBALException $e) {
+        } catch (\Exception $e) {
             return [
                 'data' => [
                     "message" => "Impossible de mettre à jour",
