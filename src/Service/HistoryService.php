@@ -99,17 +99,9 @@ class HistoryService
     {
         try {
             $inputs = $request->query->all();
-            $data = $this->tokenService->MiddlewareNormalUser($request->headers->get('Authorization'));
-            if (!isset($data['user']) || !$data['user']) {
-                return [
-                    'data' => "unauthorized !",
-                    'errorCode' => 401
-                ];
-            }
-            $user = $data['user'];
             if (isset($inputs['inventaireId']) && !is_null($inputs['inventaireId']))
             {
-                $listperinventaire = $this->entityManager->getRepository(History::class)->findBy(['user' => $user,'inventaire' => $inputs['inventaireId'],array('userEditedDateTravaux' => 'DESC')]);
+                $listperinventaire = $this->entityManager->getRepository(History::class)->findBy(['inventaire' => $inputs['inventaireId'],array('createdAt' => 'DESC')]);
                 return [
                     'data' => $listperinventaire,
                     'errorCode' => 200
