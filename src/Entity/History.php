@@ -54,6 +54,7 @@ class History
 
     /**
      * @ORM\Column(type="point")
+     * @Groups({"history"})
      * @var Point
      */
     private $coord;
