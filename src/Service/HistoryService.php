@@ -101,9 +101,10 @@ class HistoryService
             $inputs = $request->query->all();
             if (isset($inputs['inventaireId']) && !is_null($inputs['inventaireId']))
             {
+                $workHistory = $this->entityManager->getRepository(History::class)->findBy([], ['createdAt' => 'DESC'], 3, 0);
                 $listperinventaire = $this->entityManager->getRepository(History::class)->findBy(['inventaire' => $inputs['inventaireId'],array('createdAt' => 'DESC')]);
                 return [
-                    'data' => $listperinventaire,
+                    'data' => [$listperinventaire,$workHistory],
                     'errorCode' => 200
                 ];
             }else
