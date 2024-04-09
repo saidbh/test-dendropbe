@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Arbre;
 use App\Entity\History;
 use App\Entity\HistoryDocs;
 use App\Entity\Inventaire;
@@ -56,16 +57,15 @@ class HistoryService
 
     }
 
-    public function addHistory(Inventaire $inventaire)
+    public function addHistory(Inventaire $inventaire,Arbre $arbre)
     {
         try {
 
             if ($inventaire->getArbre())
             {
-                $history = null;
-                $this->serializer->deserialize(json_encode($inventaire->getArbre(), true), History::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $history]);
+            $history = null;
+            $this->serializer->deserialize(json_encode($arbre, true), History::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $history]);
             $history->setInventaire($inventaire);
-
             $this->entityManager->flush();
             }
 

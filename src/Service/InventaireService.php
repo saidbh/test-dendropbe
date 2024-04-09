@@ -381,16 +381,6 @@ class InventaireService extends AbstractController
             }
 
             $this->_travauxService->validTravauxInventory($inventory);
-           $historyResponse = $this->historyService->addHistory($inventory);
-           if ($historyResponse['errorCode'] != 200)
-           {
-               return [
-                   "data" => [
-                       "message" => $historyResponse['data']
-                   ],
-                   "statusCode" => $historyResponse['errorCode']
-               ];
-           }
         }
         return [
             "data" => [
@@ -601,6 +591,7 @@ class InventaireService extends AbstractController
             ];
         }
         try {
+            $this->historyService->addHistory($inventaire,$arbre);
             $this->_arbreService->updateArbre($data, $arbre);
             return [
                 'isDone' => true,
