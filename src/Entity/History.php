@@ -25,25 +25,24 @@ class History
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Espece", inversedBy="arbres")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"history"})
      */
 
     private $espece;
 
     /**
      * @ORM\ManyToOne(targetEntity=Inventaire::class)
-     * @Groups({"history"})
      */
     private $inventaire;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"history"})
+     * @Groups({"read","history"})
      */
     private $diametre;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"read"})
      */
     private $createdAt;
 
@@ -54,84 +53,84 @@ class History
 
     /**
      * @ORM\Column(type="point")
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      * @var Point
      */
     private $coord;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $codeSite;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $numSujet;
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $critere = [];
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $implantation;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $domaine;
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $nuisance = [];
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $proximite = [];
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $tauxFreq;
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $typePassage = [];
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $accessibilite;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $abattage;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $travauxCollet;
 
@@ -143,44 +142,44 @@ class History
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $travauxHouppier;
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $dateTravaux;
 
     /**
      * @ORM\Column(type="string", nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $dateProVisite;
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $comProVisite;
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $caractPied = [];
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $caractTronc;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $hauteur;
 
@@ -192,60 +191,60 @@ class History
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $stadeDev;
 
     /**
      * @ORM\Column(type="array", nullable=true, nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $etatSanCollet = [];
 
     /**
      * @ORM\Column(type="array", nullable=true, nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $etatSanTronc = [];
 
     /**
      * @ORM\Column(type="array", nullable=true, nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $etatSanHouppier = [];
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Nuisible", inversedBy="arbres")
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $nuisanceNuisibles;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $address;
 
     /**
      * @ORM\Column(type="text", nullable=true, length=2000)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $comAccess;
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $dict = [];
 
     /**
      * @ORM\Column(type="json_array")
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $risque;
 
@@ -257,20 +256,20 @@ class History
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $accessibiliteOther;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $caractPiedOther;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $caractTroncMultiples;
 
@@ -283,26 +282,26 @@ class History
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $etatSanColletChampignons = [];
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $etatSanTroncCavite;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $etatSanTroncCorpsEtranger;
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $etatSanTroncChampignons = [];
 
@@ -316,50 +315,51 @@ class History
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $etatSanHouppierChampignons = [];
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $etatSanHouppierNuisibles = [];
 
     /**
      * @ORM\Column(type="array", nullable=true)
      * @SWG\Property(type="array", @SWG\Items(type="string"))
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $risqueGeneral = [];
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $travauxCommentaire;
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $critereOther;
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $risqueGeneralOther;
 
     /**
      * @ORM\Column(type="text", length=2000, nullable=true)
-     * @Groups({"history"})
+     * @Groups({"history","read"})
      */
     private $typePassageOther;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"history","read"})
      */
     private $typeIntervention;
 
@@ -372,6 +372,7 @@ class History
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"history"})
      */
     private $userEditedDateTravaux;
 
@@ -595,18 +596,6 @@ class History
     public function setCoord(Point $coord): self
     {
         $this->coord = $coord;
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(User $user): self
-    {
-        $this->user = $user;
-
         return $this;
     }
 

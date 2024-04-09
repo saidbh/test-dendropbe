@@ -101,10 +101,8 @@ class HistoryService
             $inputs = $request->query->all();
             if (isset($inputs['inventaireId']) && !is_null($inputs['inventaireId']))
             {
-                $workHistory = $this->entityManager->getRepository(History::class)->findBy([], ['createdAt' => 'DESC'], 3, 0);
-                $listperinventaire = $this->entityManager->getRepository(History::class)->findBy(['inventaire' => $inputs['inventaireId'],array('createdAt' => 'DESC')]);
-                return [
-                    'data' => [$listperinventaire,$workHistory],
+                $listperinventaire = $this->serializer->serialize($this->entityManager->getRepository(History::class)->findBy([], ['createdAt' => 'DESC'], 3, 0), 'json', ['groups' => 'history']);                return [
+                    'data' => json_decode($listperinventaire, true),
                     'errorCode' => 200
                 ];
             }else
@@ -174,13 +172,6 @@ class HistoryService
             ];
         }
 
-    }
-
-    public function getPropertyType(string $className, string $propertyName): ?string {
-        $reflection = new ReflectionClass($className);
-        $property = $reflection->getProperty($propertyName);
-        $type = $property->getType();
-        return $type ? $type->getName() : null;
     }
 
 }

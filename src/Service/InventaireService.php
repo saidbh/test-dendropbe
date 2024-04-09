@@ -615,7 +615,7 @@ class InventaireService extends AbstractController
         if ($object->getArbre()) {
             $_object['arbre'] = $this->_arbreService->generateObjectArbreJson($object);
         }
-        $_object['workHistory'] = $this->historyRepository->findBy(['inventaire' => $object->getId()], ['createdAt' => 'DESC'], 3, 0);
+        $_object['workHistory'] =  json_decode($this->serializer->serialize($this->historyRepository->findBy(["inventaire" => $object->getId()], ['createdAt' => 'DESC'], 3, 0), 'json', ['groups' => 'history']), true);
         // EPAYSAGE
         $_object['epaysage'] = $object->getEpaysage() ? $this->serializerEpaysage($object->getEpaysage()) : null;
         //
