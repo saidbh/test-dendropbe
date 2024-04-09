@@ -63,9 +63,9 @@ class HistoryService
 
             if ($inventaire->getArbre())
             {
-            $history = null;
-            $this->serializer->deserialize(json_encode($arbre, true), History::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $history]);
+            $history = $this->serializer->deserialize(json_encode($arbre, true), History::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $history]);
             $history->setInventaire($inventaire);
+            $this->entityManager->persist($history);
             $this->entityManager->flush();
             }
 
