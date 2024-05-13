@@ -1,6 +1,6 @@
 name: ci
 env:
-  REPO: dendrodevops/dendro_backend_dev
+  REPO: saidbh/main
   
 on:
   push:
