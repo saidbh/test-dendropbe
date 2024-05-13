@@ -35,6 +35,10 @@ jobs:
           echo "DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}"
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          ecr: auto
+          logout: true
+        env:
+          REPO: saidbenhmed/dendro-backend-prod
       -
         name: Build and push
         uses: docker/build-push-action@v3
