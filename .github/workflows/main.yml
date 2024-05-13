@@ -1,4 +1,4 @@
-name: ci
+name: test
 env:
   REPO: saidbh/main
   
