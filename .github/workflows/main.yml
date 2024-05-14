@@ -1,6 +1,6 @@
 name: test1
 env:
-  REPO: saidbh/test-dendropbe
+  REPO: saidbenhmed/dendro-backend-prod
   
 on:
   push:
