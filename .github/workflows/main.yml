@@ -1,6 +1,6 @@
 name: test1
 env:
-  REPO: saidbenhmed/dendro-backend-prod
+  REPO: saidbh/test-dendropbe
   
 on:
   push:
@@ -31,8 +31,8 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v2
         with:
-          username: 'saidbenhmed'
-          password: '&2*$Xd/i-pJx@+%'
+          username: 'saidbh'
+          password: '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'
       -
         name: Build and push
         uses: docker/build-push-action@v3
